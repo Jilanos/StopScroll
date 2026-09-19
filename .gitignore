@@ -10,3 +10,9 @@ build/
 !.env.example
 .DS_Store
 coverage/
+
+# Android
+local.properties
+.gradle/
+*.apk
+.kotlin/

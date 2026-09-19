@@ -1,14 +1,15 @@
 ## task_001_deliver_stopscroll_android_mvp_apk - Deliver StopScroll Android MVP APK
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
 > Progress: 0%
 > Complexity: High
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
-> Indicators reviewed: 2026-09-19 16:20:58
+> Indicators reviewed: 2026-09-19 17:49:22
+> Owner: paul.mondou@circle-mobility.com
 
 # AI Context
 - Summary: Deliver four slices in dependency order with confirmed pause/resume semantics and real-device acceptance..
