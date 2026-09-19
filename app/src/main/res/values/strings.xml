@@ -22,5 +22,8 @@
     <string name="save">Enregistrer</string>
     <string name="cancel">Annuler</string>
 
-    <string name="warning_overlay">StopScroll : il reste %1$d secondes</string>
+    <plurals name="warning_overlay">
+        <item quantity="one">StopScroll : il reste %1$d seconde</item>
+        <item quantity="other">StopScroll : il reste %1$d secondes</item>
+    </plurals>
 </resources>

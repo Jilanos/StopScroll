@@ -29,7 +29,7 @@ class WarningOverlay(private val service: AccessibilityService) {
             hide()
             val seconds = (remainingMillis / 1000.0).roundToInt()
             val text = TextView(service).apply {
-                text = service.getString(R.string.warning_overlay, seconds)
+                text = service.resources.getQuantityString(R.plurals.warning_overlay, seconds, seconds)
                 setTextColor(Color.WHITE)
                 setBackgroundColor(Color.argb(220, 0, 0, 0))
                 textSize = 18f

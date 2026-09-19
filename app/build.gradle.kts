@@ -41,6 +41,11 @@ android {
     lint {
         warningsAsErrors = true
         abortOnError = true
+        // The toolchain is pinned deliberately; "a newer version exists" depends on network
+        // state and would make the build non-reproducible.
+        // ObsoleteSdkInt wants mipmap-anydpi-v26 merged into mipmap-anydpi, which AAPT2 then
+        // fails to resolve at all.
+        disable += listOf("GradleDependency", "AndroidGradlePluginVersion", "ObsoleteSdkInt")
     }
 }
 
