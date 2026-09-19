@@ -1,0 +1,203 @@
+{
+  "title": "StopScroll Android MVP for per-opening app limits",
+  "references": [
+    "logics/scaffold/android-mvp-decisions.md",
+    "https://developer.android.com/reference/android/accessibilityservice/AccessibilityService",
+    "https://developer.android.com/guide/topics/ui/accessibility/views/service",
+    "https://developer.android.com/training/package-visibility/declaring",
+    "https://support.google.com/android/answer/12623953?hl=en"
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Android MVP",
+    "needs": [
+      "Build a functional installable Android APK using Kotlin and Jetpack Compose with a simple architecture.",
+      "Select installed launchable applications to monitor, with Instagram (com.instagram.android) as the initial real-device target.",
+      "Configure an independent maximum duration per opening and cooldown for each selected app.",
+      "Detect foreground transitions with AccessibilityService, warn 30 seconds before expiry, send HOME at expiry, and send HOME immediately on attempts to reopen during cooldown.",
+      "Persist configuration after process death and device restart; deliver build, APK installation and permission activation instructions."
+    ],
+    "context": [
+      "The repository currently contains only Git and Logics scaffolding; no Android project or toolchain has been established. This corpus defines future implementation, not a delivered APK.",
+      "The user explicitly prioritizes a functional APK and simple architecture; the present request is to prepare the corpus and identify questions before development.",
+      "Instagram is an explicitly requested technical target, not a client identity; retain its name and package for testability. Selection of additional launchable apps remains in MVP scope.",
+      "User confirmed retaining remaining foreground usage across openings, Pixel 8 with the latest Android available for that model, French UI, overlay warning, cooldown persistence, freely editable rules and manual APK installation. Only initial duration defaults remain optional; detailed choices are in logics/scaffold/android-mvp-decisions.md.",
+      "Proposed architecture: one Android app module, Compose Activity plus ViewModel, DataStore repository, a pure Kotlin session state machine and an AccessibilityService adapter owning its coroutine scope.",
+      "Proposed minimum: Android 8/API 26. Validation target: Pixel 8; record its exact installed Android version/build rather than guessing what latest means. Pin compatible current build dependencies during implementation.",
+      "Accessibility availability and event timing depend on Android and device behavior. HOME is a reactive return to the launcher, not force-stop or a secure OS-level launch prohibition.",
+      "Foreground tracking must observe non-target transitions too; filtering accessibility events exclusively to Instagram would hide exits.",
+      "Proposed warning: brief non-touchable accessibility overlay; avoid adding notification or general overlay permissions unless the selected design requires them."
+    ],
+    "acceptance_criteria": [
+      "AC1: A clean checkout builds an installable debug APK with the checked-in Gradle wrapper and documented JDK/SDK prerequisites; Kotlin and Compose implement a single-module app.",
+      "AC2: The user can select installed launchable apps, including Instagram when present, and save independent positive usage and cooldown durations. The main screen shows each selected app, allowed duration and block duration; invalid input is rejected without corrupting saved settings.",
+      "AC3: A genuine foreground opening starts a new allowance or resumes its persisted remaining time. Leaving for another app or locking the screen pauses usage; after consuming 2 of 5 minutes, reopening even 10 minutes later grants exactly 3 minutes. Duplicate events and navigation within the same app do not reset it; a non-selected app never acquires a session.",
+      "AC4: For a session longer than 30 seconds, one visible warning is issued when 30 seconds remain, with a target tolerance of 2 seconds on the supported device. For a duration of 30 seconds or less, the proposed behavior is one warning immediately on opening; both are verified without resetting the session.",
+      "AC5: At the deadline the service starts a cooldown for that package and invokes GLOBAL_ACTION_HOME if the target is still foreground. While enabled, cooldown re-entry is rejected on the first confirmed target foreground event, targeting HOME within 1 second of receipt; it never ejects an unrelated foreground app.",
+      "AC6: Repeated attempts during cooldown do not extend its deadline. At expiry a new opening is allowed. Independent packages do not overwrite each other's rules or cooldowns.",
+      "AC7: App selections, durations, remaining usage allowance, warning state and cooldown survive service restart/reboot. Normal exits preserve exact remaining usage; abrupt process loss permits at most 1 second checkpoint rollback. Unknown disconnected time does not consume usage; cooldown continues by elapsed time. Recovery and clock assumptions are tested and documented without silently granting a full fresh allowance.",
+      "AC8: The UI clearly reports accessibility enabled/disabled and links to system settings. The user explicitly enables the service; if disabled or force-stopped the app does not claim protection. No screen content, credentials or browsing activity are captured or transmitted.",
+      "AC9: Pure state-machine tests cover duplicate events, warning/expiry boundaries, exits, reopening policy, cooldown re-entry and expiry, persistence recovery and independent apps. A device checklist verifies Instagram warning, HOME, re-entry, reboot and permission activation with recorded results and untested limitations.",
+      "AC10: The README documents exact build commands, generated APK path, adb and manual installation, accessibility activation including restricted settings where applicable, troubleshooting and known limitations. No real-device success is claimed without execution evidence."
+    ]
+  },
+  "product": {
+    "title": "StopScroll minimal Android self-control app",
+    "overview": "Help a user interrupt prolonged app sessions and enforce a short break, initially validated with Instagram, through a locally configured Android app.",
+    "goals": [
+      "Deliver a reproducible debug APK and a short understandable permission setup.",
+      "Keep the experience to app selection, duration configuration, service status and enforcement.",
+      "Make session and cooldown behavior explicit, deterministic and testable.",
+      "Store data locally and require no account, server or network."
+    ],
+    "non_goals": [
+      "Play Store submission, billing, accounts, cloud sync, analytics or daily reports.",
+      "Anti-uninstall, PIN enforcement, device-owner management or protection against a user disabling accessibility.",
+      "Daily cumulative budgets, scheduling, complex rules or reminders outside active sessions.",
+      "Guaranteed coverage of split-screen, picture-in-picture, cloned apps, work profiles, browser Instagram or Instagram Lite in the initial validation.",
+      "A foreground-service framework, polling loop, Usage Access permission or exact alarms unless demonstrated necessary and scoped explicitly."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Bootstrap Android app and persistent app rules",
+      "priority": "High — prerequisite for a buildable APK and every enforcement slice.",
+      "complexity": "Medium",
+      "theme": "Android foundation",
+      "request_acs": [
+        "AC1",
+        "AC2"
+      ],
+      "problem": [
+        "There is no Android code or build system and no editable persistent rule model."
+      ],
+      "scope_in": [
+        "Create one Gradle Android app module with Kotlin, Compose, pinned dependencies and wrapper.",
+        "Implement French resource-based UI, app picker, rule editor, duration validation and DataStore repository.",
+        "Query launchable apps using scoped package visibility; exclude StopScroll and the default launcher from monitoring to avoid loops. Handle missing or removed Instagram gracefully.",
+        "Proposed defaults: usage 5 minutes, cooldown 10 minutes; positive integer seconds in storage and explicit units in UI. Initialize the project i18n contract when UI implementation starts."
+      ],
+      "scope_out": [
+        "Multi-module clean architecture, database, dependency-injection framework and custom design system."
+      ],
+      "acceptance_criteria": [
+        "AC1: The documented debug build produces an installable APK from a clean checkout.",
+        "AC2: Instagram and a second installed launchable app can have different persisted rules; editing, deselection, invalid input and process recreation behave consistently."
+      ]
+    },
+    {
+      "title": "Implement deterministic session and cooldown engine",
+      "priority": "High — defines the core behavior independently of Android events.",
+      "complexity": "High",
+      "theme": "Session enforcement",
+      "request_acs": [
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7"
+      ],
+      "problem": [
+        "Timers must remain correct across repeated events, departures and recovery without blocking the wrong app."
+      ],
+      "scope_in": [
+        "Implement a pure Kotlin state machine with injected clock and serialized events; model foreground ownership, session deadline, warning sent and per-package cooldown.",
+        "Implement confirmed resume policy: pause remaining foreground allowance on ordinary app exit or lock; resume on entry; only exhausted allowance starts cooldown. Test the 5-minute allowance / 2-minute use / 10-minute absence / 3-minute remaining example.",
+        "Use monotonic deadlines within a boot. Persist remaining usage and warning state on exit/disconnect with at most 1-second active checkpoint intervals; restore checkpoints after abrupt loss without charging unobserved time. Persist cooldown independently and use bounded wall-clock recovery across reboot; document manual clock-change limitations.",
+        "Persist cooldown before HOME so failed HOME actions cannot grant a new session. Retrying entry must not move the cooldown deadline.",
+        "Apply changes to limits on the next session; disabling a rule stops enforcement and clears its session/cooldown under the proposed self-control policy."
+      ],
+      "scope_out": [
+        "OS integration and tamper-resistant timekeeping."
+      ],
+      "acceptance_criteria": [
+        "AC1: Fake-clock tests prove duplicate foreground events do not reset deadlines and warning occurs at most once per session.",
+        "AC2: Tests cover exact expiry, no ejection of unrelated apps, per-package cooldown, repeated blocked openings, cooldown expiry and the approved exit/reopen policy.",
+        "AC3: Restart/reboot recovery and rule mutation behavior are specified and tested; no unnecessary daily quota logic is introduced."
+      ]
+    },
+    {
+      "title": "Connect accessibility detection warning and HOME enforcement",
+      "priority": "High — delivers the actual Android interruption loop.",
+      "complexity": "High",
+      "theme": "Android accessibility",
+      "request_acs": [
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC8"
+      ],
+      "problem": [
+        "The state engine needs reliable app transition input and Android warning/HOME actions."
+      ],
+      "scope_in": [
+        "Declare a user-enabled AccessibilityService, observe relevant foreground/window events across packages and deduplicate activity transitions.",
+        "Treat keyboard, notification shade, permission dialogs and the service warning as transient system UI, not fresh openings. Define screen-lock behavior from the chosen session policy.",
+        "Show a short non-focusable non-touchable accessibility warning overlay at the warning boundary and clean it up on target exit, expiry or disconnect.",
+        "Use performGlobalAction(GLOBAL_ACTION_HOME); check its result, avoid unbounded retry loops and expose failures honestly.",
+        "On disconnect cancel callbacks/overlays and on reconnection reconcile persisted state before accepting a target entry. Do not navigate HOME from a stale callback while another app is foreground.",
+        "Show accessibility state and an activation link in Compose. Minimize capabilities; avoid reading view text or requesting window-content retrieval unless foreground identification proves it necessary."
+      ],
+      "scope_out": [
+        "Force stopping applications, disabling user controls and requesting unnecessary permissions."
+      ],
+      "acceptance_criteria": [
+        "AC1: On the validation device Instagram starts one session, warns once and returns HOME on expiry within the documented timing tolerance.",
+        "AC2: Reopening Instagram during cooldown returns HOME on its first confirmed event without extending the cooldown, while other apps remain usable.",
+        "AC3: Internal navigation and transient UI do not restart the timer; permission revocation/disconnect removes overlays and the UI reports that protection is off."
+      ]
+    },
+    {
+      "title": "Validate APK and document installation and permissions",
+      "priority": "High — a functional APK and reproducible setup are the primary deliverable.",
+      "complexity": "Medium",
+      "theme": "MVP delivery",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "A successful build alone does not establish that the service behaves correctly on a real phone."
+      ],
+      "scope_in": [
+        "Run meaningful engine tests and Android build/lint checks, then install on the confirmed target device or record the device validation blocker.",
+        "Provide a manual scenario checklist using short durations and real Instagram, plus a second target for independence.",
+        "Verify persistence after app process recreation, service reconnect and device reboot; verify lock/unlock and unrelated foreground apps at expiry.",
+        "Document wrapper build commands, JDK/SDK versions, APK path, adb install -r and manual APK installation, service activation and device-specific restricted settings.",
+        "Record exact tested OS/device, results and known limitations; retain reproducible debug APK delivery without choosing a production signing/distribution system."
+      ],
+      "scope_out": [
+        "Publishing to an app store, automated device farms and production release signing."
+      ],
+      "acceptance_criteria": [
+        "AC1: Build/test results and executed device checklist steps are recorded with failures and remaining unverified cases.",
+        "AC2: A user can follow the README to build, find, install and enable the APK; the functional claim is contingent on the Instagram device checks.",
+        "AC3: No requirement is closed solely on an emulator substitute when Instagram enforcement has not been exercised."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Deliver StopScroll Android MVP APK",
+    "plan": [
+      "Wave 0: Read confirmed resume-remaining-time decisions in logics/scaffold/android-mvp-decisions.md. Retain 5/10-minute defaults unless the user specifies alternatives. Inspect Android/JDK/SDK and Pixel 8 access; record exact installed Android version for validation.",
+      "Wave 1: Implement the Android foundation and persistent rule editor; initialize source-locale fr i18n only when implementing user-facing copy. Verify a debug APK build and configuration persistence.",
+      "Wave 2: Implement and test the pure Kotlin session/cooldown engine with fake clocks, serialized transitions and recovery semantics.",
+      "Wave 3: Connect AccessibilityService, overlay warning, HOME actions and service status UI; verify foreground ownership and cleanup.",
+      "Wave 4: Execute the Instagram/device checklist, document build/install/permissions, record evidence and limitations, then use Logics closeout only when acceptance criteria are met."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/android-mvp.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

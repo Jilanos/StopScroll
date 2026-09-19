@@ -1,0 +1,282 @@
+{
+  "budgets": {
+    "max_docs": 28,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_000_stopscroll_android_mvp_for_per_opening_app_limits prod_001_stopscroll_minimal_android_self_control_app item_001_bootstrap_android_app_and_persistent_app_rules item_002_implement_deterministic_session_and_cooldown_engine item_003_connect_accessibility_detection_warning_and_home_enforcement item_004_validate_apk_and_document_installation_and_permissions task_001_deliver_stopscroll_android_mvp_apk --mode summary-only --profile normal",
+  "companion_docs": [],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "stopscroll, android, mvp, per, opening, app, limits",
+        "skip when": "adding store publication, daily quotas or tamper resistance.",
+        "summary": "Retained foreground allowance across openings, per-package cooldowns and Pixel 8 validation define the acceptance contract..",
+        "use when": "scoping the MVP or checking requirements."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_001_bootstrap_android_app_and_persistent_app_rules",
+          "item_002_implement_deterministic_session_and_cooldown_engine",
+          "item_003_connect_accessibility_detection_warning_and_home_enforcement",
+          "item_004_validate_apk_and_document_installation_and_permissions"
+        ],
+        "prod": [
+          "prod_001_stopscroll_minimal_android_self_control_app"
+        ],
+        "req": [
+          "req_000_stopscroll_android_mvp_for_per_opening_app_limits"
+        ]
+      },
+      "path": "logics/request/req_000_stopscroll_android_mvp_for_per_opening_app_limits.md",
+      "ref": "req_000_stopscroll_android_mvp_for_per_opening_app_limits",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "StopScroll Android MVP for per-opening app limits"
+    },
+    {
+      "ai_context": {
+        "keywords": "bootstrap, android, app, persistent, rules",
+        "skip when": "changing session timing or accessibility event handling.",
+        "summary": "Create the missing Android build and editable per-app rules with local persistence..",
+        "use when": "building the project, picker or rule editor."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_001_bootstrap_android_app_and_persistent_app_rules"
+        ],
+        "prod": [
+          "prod_001_stopscroll_minimal_android_self_control_app"
+        ],
+        "req": [
+          "req_000_stopscroll_android_mvp_for_per_opening_app_limits"
+        ],
+        "task": [
+          "task_001_deliver_stopscroll_android_mvp_apk"
+        ]
+      },
+      "path": "logics/backlog/item_001_bootstrap_android_app_and_persistent_app_rules.md",
+      "ref": "item_001_bootstrap_android_app_and_persistent_app_rules",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Bootstrap Android app and persistent app rules"
+    },
+    {
+      "ai_context": {
+        "keywords": "implement, deterministic, session, cooldown, engine",
+        "skip when": "building overlays or package selection UI.",
+        "summary": "Pause and resume remaining usage; only exhaustion starts cooldown. Test clock and recovery behavior without Android..",
+        "use when": "implementing timing transitions or fake-clock tests."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_002_implement_deterministic_session_and_cooldown_engine"
+        ],
+        "prod": [
+          "prod_001_stopscroll_minimal_android_self_control_app"
+        ],
+        "req": [
+          "req_000_stopscroll_android_mvp_for_per_opening_app_limits"
+        ],
+        "task": [
+          "task_001_deliver_stopscroll_android_mvp_apk"
+        ]
+      },
+      "path": "logics/backlog/item_002_implement_deterministic_session_and_cooldown_engine.md",
+      "ref": "item_002_implement_deterministic_session_and_cooldown_engine",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Implement deterministic session and cooldown engine"
+    },
+    {
+      "ai_context": {
+        "keywords": "connect, accessibility, detection, warning, home, enforcement",
+        "skip when": "changing build tools or distribution.",
+        "summary": "Translate package transitions into engine events and return HOME without ejecting unrelated apps..",
+        "use when": "implementing accessibility, warnings and activation status."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_003_connect_accessibility_detection_warning_and_home_enforcement"
+        ],
+        "prod": [
+          "prod_001_stopscroll_minimal_android_self_control_app"
+        ],
+        "req": [
+          "req_000_stopscroll_android_mvp_for_per_opening_app_limits"
+        ],
+        "task": [
+          "task_001_deliver_stopscroll_android_mvp_apk"
+        ]
+      },
+      "path": "logics/backlog/item_003_connect_accessibility_detection_warning_and_home_enforcement.md",
+      "ref": "item_003_connect_accessibility_detection_warning_and_home_enforcement",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Connect accessibility detection warning and HOME enforcement"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_001_bootstrap_android_app_and_persistent_app_rules",
+          "item_002_implement_deterministic_session_and_cooldown_engine",
+          "item_003_connect_accessibility_detection_warning_and_home_enforcement",
+          "item_004_validate_apk_and_document_installation_and_permissions"
+        ],
+        "prod": [
+          "prod_001_stopscroll_minimal_android_self_control_app"
+        ],
+        "req": [
+          "req_000_stopscroll_android_mvp_for_per_opening_app_limits"
+        ],
+        "task": [
+          "task_001_deliver_stopscroll_android_mvp_apk"
+        ]
+      },
+      "path": "logics/product/prod_001_stopscroll_minimal_android_self_control_app.md",
+      "ref": "prod_001_stopscroll_minimal_android_self_control_app",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "StopScroll minimal Android self-control app"
+    },
+    {
+      "ai_context": {
+        "keywords": "deliver, stopscroll, android, mvp, apk",
+        "skip when": "closing delivery when only documentation exists.",
+        "summary": "Deliver four slices in dependency order with confirmed pause/resume semantics and real-device acceptance..",
+        "use when": "implementing the MVP after reading the decision register."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_001_bootstrap_android_app_and_persistent_app_rules",
+          "item_002_implement_deterministic_session_and_cooldown_engine",
+          "item_003_connect_accessibility_detection_warning_and_home_enforcement",
+          "item_004_validate_apk_and_document_installation_and_permissions"
+        ],
+        "prod": [
+          "prod_001_stopscroll_minimal_android_self_control_app"
+        ],
+        "req": [
+          "req_000_stopscroll_android_mvp_for_per_opening_app_limits"
+        ],
+        "task": [
+          "task_001_deliver_stopscroll_android_mvp_apk"
+        ]
+      },
+      "path": "logics/tasks/task_001_deliver_stopscroll_android_mvp_apk.md",
+      "ref": "task_001_deliver_stopscroll_android_mvp_apk",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Deliver StopScroll Android MVP APK"
+    },
+    {
+      "ai_context": {
+        "keywords": "validate, apk, document, installation, permissions",
+        "skip when": "claiming device behavior from unit tests alone.",
+        "summary": "Execute Instagram scenarios on the Pixel 8 and record results before claiming functional APK delivery..",
+        "use when": "validating the MVP or writing installation instructions."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_004_validate_apk_and_document_installation_and_permissions"
+        ],
+        "prod": [
+          "prod_001_stopscroll_minimal_android_self_control_app"
+        ],
+        "req": [
+          "req_000_stopscroll_android_mvp_for_per_opening_app_limits"
+        ],
+        "task": [
+          "task_001_deliver_stopscroll_android_mvp_apk"
+        ]
+      },
+      "path": "logics/backlog/item_004_validate_apk_and_document_installation_and_permissions.md",
+      "ref": "item_004_validate_apk_and_document_installation_and_permissions",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Validate APK and document installation and permissions"
+    }
+  ],
+  "estimates": {
+    "char_count": 6509,
+    "companion_doc_count": 0,
+    "doc_count": 7
+  },
+  "generated_at": "2026-09-19T14:20:58Z",
+  "handoff": {
+    "companion_doc_count": 0,
+    "enabled": false,
+    "source_refs": [
+      "req_000_stopscroll_android_mvp_for_per_opening_app_limits",
+      "prod_001_stopscroll_minimal_android_self_control_app",
+      "item_001_bootstrap_android_app_and_persistent_app_rules",
+      "item_002_implement_deterministic_session_and_cooldown_engine",
+      "item_003_connect_accessibility_detection_warning_and_home_enforcement",
+      "item_004_validate_apk_and_document_installation_and_permissions",
+      "task_001_deliver_stopscroll_android_mvp_apk"
+    ],
+    "validation_summary_count": 0
+  },
+  "i18n": {
+    "actions": [
+      "Choose the source locale for app-owned user-facing copy.",
+      "Run logics-manager i18n init --source-locale <locale>.",
+      "Route new UI copy through stable semantic keys."
+    ],
+    "applicable": null,
+    "configured": false,
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "Run logics-manager i18n init --source-locale <locale> for a project that owns user-facing copy.",
+    "ok": true,
+    "state": "absent"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_000_stopscroll_android_mvp_for_per_opening_app_limits,prod_001_stopscroll_minimal_android_self_control_app,item_001_bootstrap_android_app_and_persistent_app_rules,item_002_implement_deterministic_session_and_cooldown_engine,item_003_connect_accessibility_detection_warning_and_home_enforcement,item_004_validate_apk_and_document_installation_and_permissions,task_001_deliver_stopscroll_android_mvp_apk",
+  "refs": [
+    "req_000_stopscroll_android_mvp_for_per_opening_app_limits",
+    "prod_001_stopscroll_minimal_android_self_control_app",
+    "item_001_bootstrap_android_app_and_persistent_app_rules",
+    "item_002_implement_deterministic_session_and_cooldown_engine",
+    "item_003_connect_accessibility_detection_warning_and_home_enforcement",
+    "item_004_validate_apk_and_document_installation_and_permissions",
+    "task_001_deliver_stopscroll_android_mvp_apk"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "Missing logics/release/contract.json."
+    ],
+    "configured": false,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Run logics-manager release discover --write, then review and promote logics/release/contract.draft.json to logics/release/contract.json.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "not_configured",
+    "target_id": null,
+    "target_version": null,
+    "targets": []
+  },
+  "validation_summary": []
+}
