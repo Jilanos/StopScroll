@@ -1,0 +1,5 @@
+{
+  "schema_version": "1.0",
+  "applicability": "not_applicable",
+  "reason": "L'application est monolingue (source fr) et sa copie utilisateur est portee par les ressources Android res/values/strings.xml, qui sont un catalogue XML resolu par le systeme et non un catalogue JSON adressable par catalog.path."
+}
