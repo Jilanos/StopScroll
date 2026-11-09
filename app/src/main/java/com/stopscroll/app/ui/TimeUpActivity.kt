@@ -6,17 +6,24 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,11 +32,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.stopscroll.app.R
 import com.stopscroll.app.service.ExtensionRequests
+import com.stopscroll.app.ui.theme.Spacing
+import com.stopscroll.app.ui.theme.setThemedContent
 
 /**
  * Shown by the service over a target app whose allowance just expired. "OK" and back go HOME;
@@ -48,9 +60,8 @@ class TimeUpActivity : ComponentActivity() {
         val offerMillis = intent.getLongExtra(EXTRA_OFFER_MILLIS, NONE).takeIf { it > 0L }
         val label = appLabel(packageName)
 
-        enableEdgeToEdge()
-        setContent {
-            MaterialTheme {
+        setThemedContent {
+            Surface(color = MaterialTheme.colorScheme.background) {
                 BackHandler(onBack = ::goHome)
                 TimeUpScreen(
                     packageName = packageName,
@@ -105,34 +116,79 @@ private fun TimeUpScreen(
     onClose: () -> Unit,
 ) {
     var requested by remember { mutableStateOf(false) }
-    Scaffold { padding ->
+    val colors = MaterialTheme.colorScheme
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(listOf(colors.primaryContainer, colors.background)))
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(horizontal = Spacing.xl, vertical = Spacing.l),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(Spacing.l, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AppIcon(packageName, size = 72.dp)
-            Text(label, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
-            Text(stringResource(R.string.time_up_title), style = MaterialTheme.typography.headlineMedium)
-            blockMillis?.let {
-                Text(stringResource(R.string.time_up_block, formatDuration(it)), textAlign = TextAlign.Center)
+            Box {
+                Box(
+                    modifier = Modifier
+                        .size(128.dp)
+                        .shadow(8.dp, CircleShape)
+                        .clip(CircleShape)
+                        .background(colors.surfaceContainerLowest),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    AppIcon(packageName, size = 76.dp)
+                }
+                BrandMark(
+                    size = 44.dp,
+                    modifier = Modifier.align(Alignment.BottomEnd).offset(x = 4.dp, y = 4.dp),
+                )
             }
+            Spacer(Modifier.height(Spacing.s))
+            Text(
+                text = stringResource(R.string.time_up_title),
+                style = MaterialTheme.typography.displaySmall,
+                textAlign = TextAlign.Center,
+            )
+            blockMillis?.let {
+                Text(
+                    text = stringResource(R.string.time_up_block, label, formatDuration(it)),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                )
+            }
+            Text(
+                text = stringResource(R.string.time_up_kind),
+                style = MaterialTheme.typography.bodyLarge,
+                color = colors.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(Spacing.m),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             offerMillis?.let {
-                OutlinedButton(
+                Text(
+                    text = stringResource(R.string.time_up_extend_hint, formatDuration(it)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+                FilledTonalButton(
                     onClick = {
                         requested = true
                         onExtend()
                     },
                     enabled = !requested,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) { Text(stringResource(R.string.time_up_extend)) }
-                Text(
-                    stringResource(R.string.time_up_extend_hint, formatDuration(it)),
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                )
             }
-            Button(onClick = onClose, modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = onClose, modifier = Modifier.fillMaxWidth().height(52.dp)) {
                 Text(stringResource(R.string.time_up_ok))
             }
         }

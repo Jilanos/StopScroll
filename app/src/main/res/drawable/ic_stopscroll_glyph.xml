@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Allowance ring: three quarters used, a quarter of breathing room left. -->
+    <path
+        android:pathData="M24,9A15,15 0,1 1,9 24"
+        android:strokeWidth="4.5"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M20.25,18.5h3v11h-3zM26.25,18.5h3v11h-3z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M13.4,13.4m-2.4,0a2.4,2.4 0,1 1,4.8 0a2.4,2.4 0,1 1,-4.8 0" />
+</vector>
