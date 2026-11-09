@@ -8,7 +8,7 @@
 > Complexity: High
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
-> Indicators reviewed: 2026-11-09 16:59:44
+> Indicators reviewed: 2026-11-09 21:31:35
 > Owner: paul.mondou@circle-mobility.com
 
 # AI Context
@@ -81,6 +81,7 @@
 - Waves 0-4 implemented in commits f1761ad, 4fd5a34 and 36dd29e: Gradle/Compose foundation with DataStore-backed rule editor, pure Kotlin session engine with an injected clock, AccessibilityService adapter with accessibility overlay warning and GLOBAL_ACTION_HOME enforcement, and the README build/install/permission documentation.
 - The i18n contract is recorded as not applicable: the app is single-locale French and its copy lives in Android string resources, which the JSON `catalog.path` contract cannot address.
 - Remaining before closeout: run the README device acceptance checklist on the Pixel 8 and record the exact OS version, API level and build number.
+- 2026-11-09: owner tested on Pixel 8 and approved behavior; formal 18-step device checklist (README/DEVELOPMENT.md) not yet run and recorded.
 
 # Links
 - Request: `req_000_stopscroll_android_mvp_for_per_opening_app_limits`

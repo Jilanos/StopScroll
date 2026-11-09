@@ -9,7 +9,7 @@
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: paul.mondou@live.fr
-> Indicators reviewed: 2026-11-09 16:52:25
+> Indicators reviewed: 2026-11-09 21:31:35
 
 # AI Context
 - Summary: Correct five runtime and persistence defects before MVP device acceptance.
@@ -69,6 +69,7 @@
 - On the hub, stage that patch with `git apply --cached build/review-fixes-validation/01-review-draft.patch`, then commit `new[MD]: record Android MVP review findings`. This stages the original capture while leaving the groomed working files in place.
 - Then run the required offline Gradle command outside this sandbox, record its exact result and the new APK size, and complete this correction task through Logics closeout after attaching commit-backed evidence. Commit the correction with `fix[KT/MD]: correct runtime startup rules warnings and duration bounds`.
 - Leave task_001 at 85% with Wave 4 open. The hub and owner retain the Pixel 8 device checklist.
+- 2026-11-09: fixes F1-F5 committed (e6056b9), installed on Pixel 8; owner tested and reported it works. Close after task_001 device checklist.
 
 # Links
 - Request: `req_001_review_findings_android_mvp_runtime_and_rule_persistence`

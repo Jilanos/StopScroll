@@ -8,7 +8,7 @@
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
-> Indicators reviewed: 2026-11-09 20:07:06
+> Indicators reviewed: 2026-11-09 21:31:35
 
 # AI Context
 - Summary: Time-up screen at expiry with a +30 s extension that doubles the next block, and app icons in app lists.
@@ -50,6 +50,7 @@
 - AC2/AC3: ExtensionTest, SessionRuntimeTest (persistence and LaunchApp), DurationBoundsTest (cap).
 - AC5: AppIcon.kt, MainActivity rule card and picker; device check pending.
 - AC6: README "Extension rule (+30 s)"; validation above.
+- 2026-11-09: implemented, 47 tests + lint pass, installed on Pixel 8 and owner validated the runtime ('parfait'). Remaining: confirm time-up screen opens from background and +30 s doubling on device.
 
 # Links
 - Request: `req_002_time_up_screen_extension_and_app_icons`
