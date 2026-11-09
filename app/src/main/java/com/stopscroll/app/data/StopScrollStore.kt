@@ -16,9 +16,8 @@ import kotlinx.serialization.json.Json
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "stopscroll")
 
-class StopScrollStore(context: Context) {
-
-    private val dataStore = context.applicationContext.dataStore
+class StopScrollStore internal constructor(private val dataStore: DataStore<Preferences>) {
+    constructor(context: Context) : this(context.applicationContext.dataStore)
 
     val rules: Flow<List<AppRule>> = dataStore.data.map { prefs ->
         decode(prefs[RULES_KEY], emptyList())
@@ -32,8 +31,16 @@ class StopScrollStore(context: Context) {
 
     suspend fun readRuntime(): Map<String, PackageRuntimeState> = runtime.first()
 
-    suspend fun writeRules(value: List<AppRule>) {
-        dataStore.edit { it[RULES_KEY] = json.encodeToString<List<AppRule>>(value) }
+    suspend fun readSnapshot(): StoredSnapshot {
+        val prefs = dataStore.data.first()
+        return StoredSnapshot(decode(prefs[RULES_KEY], emptyList()), decode(prefs[RUNTIME_KEY], emptyMap()))
+    }
+
+    suspend fun updateRules(transform: (List<AppRule>) -> List<AppRule>) {
+        dataStore.edit { prefs ->
+            val current = decode<List<AppRule>>(prefs[RULES_KEY], emptyList())
+            prefs[RULES_KEY] = json.encodeToString(transform(current))
+        }
     }
 
     suspend fun writeRuntime(value: Map<String, PackageRuntimeState>) {

@@ -1,10 +1,12 @@
 package com.stopscroll.app.service
 
 import android.accessibilityservice.AccessibilityService
+import android.app.KeyguardManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.PowerManager
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
@@ -14,19 +16,18 @@ import com.stopscroll.app.engine.SessionEngine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 class StopScrollAccessibilityService : AccessibilityService() {
 
-    private val scope = CoroutineScope(SupervisorJob() + kotlinx.coroutines.Dispatchers.Default)
-    private val mutex = Mutex()
+    private val scope = CoroutineScope(SupervisorJob() + kotlinx.coroutines.Dispatchers.Main.immediate)
     private val engine = SessionEngine(AndroidClock)
     private lateinit var store: StopScrollStore
     private lateinit var warningOverlay: WarningOverlay
+    private lateinit var warnings: WarningController
+    private lateinit var runtime: SessionRuntime
 
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -41,6 +42,8 @@ class StopScrollAccessibilityService : AccessibilityService() {
         super.onServiceConnected()
         store = StopScrollStore(this)
         warningOverlay = WarningOverlay(this)
+        warnings = WarningController(warningOverlay::show, warningOverlay::hide)
+        runtime = SessionRuntime(engine, store::writeRuntime, ::applyEffects)
         registerReceiver(
             screenReceiver,
             IntentFilter().apply {
@@ -50,54 +53,43 @@ class StopScrollAccessibilityService : AccessibilityService() {
         )
 
         scope.launch {
-            mutex.withLock { engine.restore(store.readRuntime()) }
+            runtime.initialize(store::readSnapshot, ::resolveForegroundPackage)
             launch {
-                store.rules.collectLatest { rules ->
-                    mutex.withLock {
-                        engine.setRules(rules)
-                        store.writeRuntime(engine.snapshot())
-                    }
+                store.rules.distinctUntilChanged().collect { rules ->
+                    runtime.updateRules(rules, ::resolveForegroundPackage)
                 }
             }
             while (isActive) {
                 delay(TICK_MILLIS)
-                runCycle { engine.onTick() }
+                runtime.cycle { engine.onTick() }
             }
         }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        val foreground = resolveForegroundPackage() ?: return
-        dispatch { engine.onForeground(foreground) }
+        dispatch {
+            val foreground = resolveForegroundPackage()
+            if (foreground == null) emptyList() else engine.onForeground(foreground)
+        }
     }
 
     override fun onInterrupt() = Unit
 
     override fun onDestroy() {
         runCatching { unregisterReceiver(screenReceiver) }
-        warningOverlay.hide()
         scope.coroutineContext[kotlinx.coroutines.Job]?.cancel()
+        if (::warnings.isInitialized) warnings.clear()
         super.onDestroy()
     }
 
     private fun dispatch(block: () -> List<EngineEffect>) {
-        scope.launch { runCycle(block) }
+        if (!::runtime.isInitialized) return
+        scope.launch { runtime.cycle(block) }
     }
 
-    private suspend fun runCycle(block: () -> List<EngineEffect>) {
-        val effects = mutex.withLock {
-            val produced = block()
-            store.writeRuntime(engine.snapshot())
-            produced
-        }
-        effects.forEach(::apply)
-    }
-
-    private fun apply(effect: EngineEffect) {
-        when (effect) {
-            is EngineEffect.ShowWarning -> warningOverlay.show(effect.remainingMillis)
-            is EngineEffect.GoHome -> goHome(effect.packageName)
-        }
+    private fun applyEffects(effects: List<EngineEffect>) {
+        warnings.update(resolveForegroundPackage(), engine::canShowWarning, effects)
+        effects.filterIsInstance<EngineEffect.GoHome>().forEach { goHome(it.packageName) }
     }
 
     /** Ownership is re-checked here so an unrelated foreground app is never ejected. */
@@ -113,18 +105,19 @@ class StopScrollAccessibilityService : AccessibilityService() {
      * left untouched.
      */
     private fun resolveForegroundPackage(): String? {
+        if (!getSystemService(PowerManager::class.java).isInteractive ||
+            getSystemService(KeyguardManager::class.java).isKeyguardLocked
+        ) return null
         val application = windows
             .filter { it.type == AccessibilityWindowInfo.TYPE_APPLICATION }
             .sortedByDescending { it.isActive }
             .firstOrNull() ?: return null
         val owner = application.root?.packageName?.toString() ?: return null
-        if (owner == packageName || owner in TRANSIENT_PACKAGES) return null
-        return owner
+        return ordinaryForegroundPackage(owner)
     }
 
     private companion object {
         const val TAG = "StopScroll"
         const val TICK_MILLIS = 1_000L
-        val TRANSIENT_PACKAGES = setOf("com.android.systemui")
     }
 }

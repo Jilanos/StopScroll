@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.stopscroll.app.R
 import com.stopscroll.app.data.StopScrollStore
 import com.stopscroll.app.engine.AppRule
+import com.stopscroll.app.engine.durationMillis
 
 class MainActivity : ComponentActivity() {
 
@@ -194,9 +195,9 @@ private fun AppPickerDialog(onDismiss: () -> Unit, onPick: (InstalledApp) -> Uni
 private fun DurationDialog(rule: AppRule, onDismiss: () -> Unit, onConfirm: (AppRule) -> Unit) {
     var usage by remember { mutableStateOf((rule.usageMillis / 1000).toString()) }
     var cooldown by remember { mutableStateOf((rule.cooldownMillis / 1000).toString()) }
-    val usageSeconds = usage.toLongOrNull()
-    val cooldownSeconds = cooldown.toLongOrNull()
-    val valid = usageSeconds != null && usageSeconds > 0 && cooldownSeconds != null && cooldownSeconds > 0
+    val usageMillis = durationMillis(usage)
+    val cooldownMillis = durationMillis(cooldown, System.currentTimeMillis())
+    val valid = usageMillis != null && cooldownMillis != null
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -207,14 +208,14 @@ private fun DurationDialog(rule: AppRule, onDismiss: () -> Unit, onConfirm: (App
                     value = usage,
                     onValueChange = { usage = it },
                     label = { Text(stringResource(R.string.usage_seconds)) },
-                    isError = usageSeconds == null || usageSeconds <= 0,
+                    isError = usageMillis == null,
                     singleLine = true,
                 )
                 OutlinedTextField(
                     value = cooldown,
                     onValueChange = { cooldown = it },
                     label = { Text(stringResource(R.string.cooldown_seconds)) },
-                    isError = cooldownSeconds == null || cooldownSeconds <= 0,
+                    isError = cooldownMillis == null,
                     singleLine = true,
                 )
                 if (!valid) Text(stringResource(R.string.invalid_duration))
@@ -224,12 +225,16 @@ private fun DurationDialog(rule: AppRule, onDismiss: () -> Unit, onConfirm: (App
             TextButton(
                 enabled = valid,
                 onClick = {
-                    onConfirm(
-                        rule.copy(
-                            usageMillis = usageSeconds!! * 1000,
-                            cooldownMillis = cooldownSeconds!! * 1000,
-                        ),
-                    )
+                    val savedUsage = durationMillis(usage)
+                    val savedCooldown = durationMillis(cooldown, System.currentTimeMillis())
+                    if (savedUsage != null && savedCooldown != null) {
+                        onConfirm(
+                            rule.copy(
+                                usageMillis = savedUsage,
+                                cooldownMillis = savedCooldown,
+                            ),
+                        )
+                    }
                 },
             ) { Text(stringResource(R.string.save)) }
         },

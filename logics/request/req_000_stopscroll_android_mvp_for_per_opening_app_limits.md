@@ -7,7 +7,7 @@
 > Complexity: High
 > Theme: Android MVP
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
-> Indicators reviewed: 2026-09-19 16:19:07
+> Indicators reviewed: 2026-11-09 16:59:44
 
 # AI Context
 - Summary: Retained foreground allowance across openings, per-package cooldowns and Pixel 8 validation define the acceptance contract..
@@ -67,3 +67,6 @@
 - `item_002_implement_deterministic_session_and_cooldown_engine`
 - `item_003_connect_accessibility_detection_warning_and_home_enforcement`
 - `item_004_validate_apk_and_document_installation_and_permissions`
+
+# Review correction checkpoint
+- 2026-11-09 review: the MVP device acceptance remains pending in task_001 at 85%. Runtime and persistence corrections are tracked by req_001; no device result or new APK is claimed.

@@ -8,7 +8,7 @@
 > Complexity: Medium
 > Theme: MVP delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
-> Indicators reviewed: 2026-09-19 17:49:22
+> Indicators reviewed: 2026-11-09 16:59:44
 
 # AI Context
 - Summary: Execute Instagram scenarios on the Pixel 8 and record results before claiming functional APK delivery..
@@ -59,3 +59,6 @@
 # Priority
 - Priority: High — a functional APK and reproducible setup are the primary deliverable.
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Review correction checkpoint
+- 2026-11-09 review: the correction build is blocked by sandbox restrictions on Gradle cache writes and local daemon sockets. Direct Kotlin/JUnit validation is recorded in task_002. The existing APK predates the fixes and must not be installed as the corrected build. Device acceptance remains pending in task_001.

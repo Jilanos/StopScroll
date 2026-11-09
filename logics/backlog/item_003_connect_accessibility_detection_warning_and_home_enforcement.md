@@ -8,7 +8,7 @@
 > Complexity: High
 > Theme: Android accessibility
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
-> Indicators reviewed: 2026-09-19 17:49:22
+> Indicators reviewed: 2026-11-09 16:59:44
 
 # AI Context
 - Summary: Translate package transitions into engine events and return HOME without ejecting unrelated apps..
@@ -55,3 +55,6 @@
 # Priority
 - Priority: High — delivers the actual Android interruption loop.
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Review correction checkpoint
+- 2026-11-09 review: F1/F2/F4 now use ordinary foreground classification, readiness-gated serialized runtime commits and synchronous warning ownership cleanup. SessionRuntimeTest and WarningControllerTest cover the extracted adapter policies; Android window/overlay behavior remains pending in task_001.

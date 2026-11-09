@@ -8,7 +8,7 @@
 > Complexity: High
 > Theme: Session enforcement
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
-> Indicators reviewed: 2026-09-19 17:49:22
+> Indicators reviewed: 2026-11-09 16:59:44
 
 # AI Context
 - Summary: Pause and resume remaining usage; only exhaustion starts cooldown. Test clock and recovery behavior without Android..
@@ -54,3 +54,6 @@
 # Priority
 - Priority: High — defines the core behavior independently of Android events.
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Review correction checkpoint
+- 2026-11-09 review: F5 adds saturating cooldown deadline arithmetic, including persisted legacy rules, covered by DurationBoundsTest. Existing session engine tests are retained. Device acceptance remains pending in task_001.

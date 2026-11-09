@@ -29,7 +29,7 @@ class RulesViewModel(private val store: StopScrollStore) : ViewModel() {
     }
 
     private fun mutate(transform: (List<AppRule>) -> List<AppRule>) {
-        viewModelScope.launch { store.writeRules(transform(store.readRules())) }
+        viewModelScope.launch { store.updateRules(transform) }
     }
 
     companion object {

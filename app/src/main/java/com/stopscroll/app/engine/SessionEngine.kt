@@ -48,6 +48,10 @@ class SessionEngine(private val clock: Clock) {
 
     fun stateOf(packageName: String): PackageRuntimeState? = snapshot()[packageName]
 
+    fun canShowWarning(packageName: String): Boolean =
+        runningPackage == packageName && foregroundPackage == packageName &&
+            (stateOf(packageName)?.remainingUsageMillis ?: 0L) > 0L
+
     fun onTick(): List<EngineEffect> = advance()
 
     fun onScreenLocked(): List<EngineEffect> = onForeground(null)
@@ -108,7 +112,7 @@ class SessionEngine(private val clock: Clock) {
             states[packageName] = PackageRuntimeState(
                 remainingUsageMillis = null,
                 warned = false,
-                cooldownEndsAtWallMillis = clock.wallTime() + rule.cooldownMillis,
+                cooldownEndsAtWallMillis = cooldownDeadline(clock.wallTime(), rule.cooldownMillis),
             )
             runningPackage = null
             return if (foregroundPackage == packageName) {

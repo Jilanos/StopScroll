@@ -8,7 +8,7 @@
 > Complexity: High
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
-> Indicators reviewed: 2026-09-19 17:49:22
+> Indicators reviewed: 2026-11-09 16:59:44
 > Owner: paul.mondou@circle-mobility.com
 
 # AI Context
@@ -86,3 +86,6 @@
 - Request: `req_000_stopscroll_android_mvp_for_per_opening_app_limits`
 - Product brief(s): `prod_001_stopscroll_minimal_android_self_control_app`
 - Architecture decision(s): (none yet)
+
+# Review correction checkpoint
+- 2026-11-09 checkpoint: F1-F5 corrections are implemented under task_002 with extracted runtime/warning policies, atomic DataStore edits and safe duration bounds. All main/test Kotlin sources compile with cached Kotlin 2.0.21 and Compose/serialization plugins; direct JUnit evidence is recorded in task_002. The required offline Gradle build is blocked by sandbox cache writes and daemon sockets, and no corrected APK has been produced. Wave 4 and the Pixel 8 checklist remain open at 85%; the hub must build the corrected APK before installation. README adds direct-to-StopScroll, warning cleanup and startup reconciliation scenarios.

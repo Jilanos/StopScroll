@@ -8,7 +8,7 @@
 > Complexity: Medium
 > Theme: Android foundation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
-> Indicators reviewed: 2026-09-19 17:49:22
+> Indicators reviewed: 2026-11-09 16:59:44
 
 # AI Context
 - Summary: Create the missing Android build and editable per-app rules with local persistence..
@@ -49,3 +49,6 @@
 # Priority
 - Priority: High — prerequisite for a buildable APK and every enforcement slice.
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Review correction checkpoint
+- 2026-11-09 review: F3 moves rule transformations into DataStore transactions; F5 bounds duration input. JVM regression coverage is in StopScrollStoreTest and DurationBoundsTest. Pixel 8 acceptance remains pending in task_001.

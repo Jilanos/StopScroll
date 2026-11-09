@@ -45,9 +45,11 @@ The APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
 ./gradlew lintDebug testDebugUnitTest assembleDebug
 ```
 
-`testDebugUnitTest` runs the pure-Kotlin session engine tests against a fake clock: pause and
-resume, warning boundaries, expiry, cooldown re-entry and expiry, restart and reboot recovery,
-rule edits and package independence. `lintDebug` runs with `warningsAsErrors`.
+`testDebugUnitTest` runs the session engine and runtime coordinator tests against a fake clock:
+pause and resume (including the StopScroll activity), startup readiness and foreground reconciliation,
+warning ownership and cleanup, duration bounds, expiry, cooldown re-entry and expiry, restart and
+reboot recovery, rule edits and package independence. A JVM DataStore test exercises overlapping
+rule transactions against a temporary preferences file. `lintDebug` runs with `warningsAsErrors`.
 
 ## Install
 
@@ -82,7 +84,8 @@ through a `<queries>` declaration rather than `QUERY_ALL_PACKAGES`.
    `com.instagram.android`). StopScroll itself and your current launcher are excluded so
    enforcement can never trap you in a HOME loop.
 2. Enter the allowed duration and the block duration, both in seconds. Both must be whole numbers
-   greater than zero; invalid input is rejected and the saved rule is left untouched.
+   greater than zero. Values exceeding safe millisecond conversion or cooldown deadline bounds
+   are rejected; invalid input leaves the saved rule untouched.
 3. The switch on each card enables or disables the rule. Disabling clears that app's remaining
    allowance and any running cooldown. A duration change applies to the next session and leaves a
    running cooldown unchanged.
@@ -145,12 +148,15 @@ device model, Android version, API level and build number when you run it.
 Suggested rule for the run: Instagram, 45 seconds allowed, 60 seconds blocked.
 
 1. Install the APK, enable the accessibility service and confirm the banner reads *Service actif*.
-2. Open Instagram: a warning appears at 15 seconds remaining (target tolerance 2 seconds).
+2. Open Instagram: a warning appears after 15 seconds (30 seconds remaining; target tolerance
+   2 seconds). Leave while it is visible: it must disappear over the launcher or another app.
+   Also try a 1-second allowance: no warning may remain over HOME after expiry.
 3. HOME is invoked near 45 seconds.
 4. Reopening during the cooldown sends you HOME again, within about 1 second of the entry.
 5. Repeated attempts do not push the cooldown deadline further out.
 6. After 60 seconds a new opening is allowed with a full fresh allowance.
-7. Leave Instagram before expiry, wait, reopen: the remaining time resumes where it stopped.
+7. Leave Instagram before expiry, including a direct switch into StopScroll settings through
+   recent apps; wait, reopen: the remaining time resumes where it stopped.
 8. Navigate between screens inside Instagram: the session is not reset.
 9. Open the notification shade and the keyboard: the session is not reset.
 10. Lock and unlock the screen: consumption is paused while locked.
@@ -160,7 +166,8 @@ Suggested rule for the run: Instagram, 45 seconds allowed, 60 seconds blocked.
 13. Disable a rule: its allowance and cooldown are cleared and it is no longer enforced.
 14. Remove Instagram from the list, or test on a device without Instagram: nothing breaks.
 15. Force-stop StopScroll or toggle the accessibility service off and on: rules, remaining
-    allowance and cooldown are restored.
+    allowance and cooldown are restored. If Instagram is already open when the service connects,
+    enforce its restored allowance or cooldown without waiting for another window event.
 16. Reboot the phone: the cooldown is still running and the remaining allowance is intact.
 
 ## Project layout
