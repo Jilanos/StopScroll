@@ -1,213 +1,118 @@
+<div align="center">
+
+<img src="docs/screenshots/icon.png" width="96" alt="StopScroll icon">
+
 # StopScroll
 
-StopScroll is an Android app that limits how long you may stay inside chosen apps per opening,
-then sends you back to the launcher and blocks re-entry for a cooldown period. The user interface
-is in French. Distribution is a manually installed debug APK; there is no Play Store build.
+**Scroll to unwind. Stay in control.**
 
-The allowance is *retained across openings*: leaving the target app pauses consumption instead of
-resetting it. If you use 2 minutes of a 5-minute allowance and come back ten minutes later, you get
-the remaining 3 minutes. Only exhausting the allowance starts a cooldown.
+An Android app that lets you enjoy your feeds, then calls time on them, gently.
+No account, no internet access, no guilt.
 
-## Prerequisites
+</div>
 
-| Tool | Version used for the delivered build |
+---
+
+Scrolling is a real way to rest. The problem is never the first ten minutes. It is the hour that
+follows without you noticing. StopScroll keeps the good part. You choose how long a break in an
+app lasts. When it is over, StopScroll closes the app and gives you a real pause before the next
+one.
+
+
+## Why it helps
+
+| | |
 | --- | --- |
-| JDK | Temurin 17.0.20.1+1 (any JDK 17 works) |
-| Android SDK platform | android-35 |
-| Android SDK build-tools | 35.0.0 |
-| Android SDK platform-tools | 37.0.1 (for `adb`) |
-| Gradle | 8.11.1, via the checked-in wrapper |
-| Android Gradle Plugin | 8.7.3 |
-| Kotlin | 2.0.21 |
+| **3 h 46 min** | Average time per day that internet users spend using the internet on mobile devices. [DataReportal, Digital 2025 Global Overview Report](https://datareportal.com/reports/digital-2025-global-overview-report) (GWI data) |
+| **2 h 21 min** | Time the typical internet user spends using social media each day. [Same report](https://datareportal.com/reports/digital-2025-global-overview-report) |
+| **16 %** | In a randomized experiment, access to a screen-time limit feature "reduced use in periods 2–5 by an average of 22 minutes per day, or 16 percent relative to the Control group". The authors estimate that "self-control problems cause 31 percent of social media use". [Allcott, Gentzkow and Song, *Digital Addiction*, American Economic Review, 2022](https://www.aeaweb.org/doi/10.1257/aer.20210867) ([working paper](https://www.nber.org/papers/w28936)) |
+| **57 %** | A short interruption before opening a chosen app "decreased users' actual opening of target apps by 57% after six consecutive weeks". [Grüning, Riedel and Lorenz-Spreen, PNAS, 2023](https://doi.org/10.1073/pnas.2213114120) |
 
-Minimum supported device: Android 8.0 (API 26). Target SDK: 35.
+Limits you set for yourself work. StopScroll makes them effortless to keep.
 
-Point the build at your SDK with a `local.properties` file at the repository root (it is
-gitignored):
+## How it works
 
-```properties
-sdk.dir=/absolute/path/to/Android/Sdk
-```
+1. **You set a time to unwind.** Pick an app and how long you want to enjoy it, for example
+   5 minutes. Leave the app and come back later: the remaining time waits for you.
+2. **A gentle heads-up.** 30 seconds before the end, a small message appears at the top of the
+   screen for 4 seconds. No sound, no vibration.
+3. **Time for a pause.** When the time is up, StopScroll shows a calm screen and the app takes a
+   break, for example 10 minutes. Opening it during the break sends you back to your home screen.
+4. **Need to finish something?** Tap **+30 s** to get 30 more seconds. The next pause is twice as
+   long. Each further +30 s doubles it again. Finishing a message is fine. Endless "one more
+   minute" is not.
 
-Alternatively export `ANDROID_HOME`. Set `JAVA_HOME` to your JDK 17 installation.
+When the pause is over, a full new allowance starts.
 
-## Build
+## Features
 
-```bash
-./gradlew assembleDebug
-```
+- One rule per app, each with its own time to unwind, pause duration and on/off switch.
+- Your remaining time is kept across openings, restarts and reboots.
+- A calm time-up screen with the app icon, the pause length and the **+30 s** option.
+- App icons everywhere, suggestions for the usual feeds, and search in the app picker.
+- Quick presets (1, 5, 10, 15, 30 min of use; 5, 10, 20, 30 min or 1 h of pause) or any value in seconds.
+- Light and dark themes, following the system or your choice.
+- Interface in French.
 
-The APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
+## Privacy
 
-## Validate
+Everything stays on your phone.
 
-```bash
-./gradlew lintDebug testDebugUnitTest assembleDebug
-```
+- **No internet access.** The app declares no `INTERNET` permission, so it cannot send anything.
+- **No account, no analytics, no ads.**
+- **No backup of your data** to the cloud (`allowBackup` is off).
+- StopScroll only learns **which app is in the foreground**. It never reads screen text, takes
+  screenshots, or sees what you type or browse.
+- It lists only launchable apps, through a scoped `<queries>` declaration instead of
+  `QUERY_ALL_PACKAGES`.
 
-`testDebugUnitTest` runs the session engine and runtime coordinator tests against a fake clock:
-pause and resume (including the StopScroll activity), startup readiness and foreground reconciliation,
-warning ownership and cleanup, duration bounds, expiry, cooldown re-entry and expiry, restart and
-reboot recovery, rule edits, package independence, and the +30 s extension with its doubled block. A JVM DataStore test exercises overlapping
-rule transactions against a temporary preferences file. `lintDebug` runs with `warningsAsErrors`.
+## The accessibility permission, honestly
+
+StopScroll needs Android's accessibility service to know when you open a chosen app and to send
+you back to the home screen. It is the only permission the app asks for. There is no overlay
+permission, no usage access, no notifications, no device administrator and no root.
+
+Android shows a strong warning when you enable any accessibility service, because such a service
+*could* read the screen. StopScroll's service listens to window changes only. Android requires the
+window-content capability for a service to list the open windows. StopScroll uses it only to read
+which app owns each window, never what is inside. The source code is here for you to check.
+
+The app enforces nothing until you turn the service on yourself, and you can turn it off at any
+time in the settings. StopScroll is a self-control tool you choose, not a lock.
 
 ## Install
 
-With adb:
+**From a release.** Download the APK from the
+[Releases](https://github.com/Jilanos/StopScroll/releases) page, open it on your phone and allow
+installs from that source when asked.
 
-```bash
-adb install -r app/build/outputs/apk/debug/app-debug.apk
-```
+**From source.** See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-Manually: copy `app-debug.apk` to the phone, open it from the Files app and allow installing from
-that source when prompted.
+Then, in StopScroll:
 
-## Activate the accessibility service
+1. Follow the setup card: **Settings → Accessibility → Installed apps → StopScroll**, and turn
+   it on.
+2. If the switch is greyed out, the app came from outside a store and Android restricts it. Open
+   **Settings → Apps → StopScroll → ⋮ → Allow restricted settings**, then try again
+   ([Android help](https://support.google.com/android/answer/12623953)).
+3. Back in StopScroll, the top card reads *StopScroll veille*. Add your first app.
 
-StopScroll enforces nothing until you enable it yourself; it cannot grant itself access.
+Requires Android 8.0 or later.
 
-1. Open **Paramètres → Accessibilité → Applications installées → StopScroll**.
-2. Enable the service and confirm the system dialog.
-3. On recent Android versions an APK installed outside an app store lands in *restricted settings*.
-   If the toggle is greyed out, open **Paramètres → Applications → StopScroll → ⋮ → Autoriser les
-   paramètres restreints**, then enable the service again. See
-   [Android restricted settings](https://support.google.com/android/answer/12623953).
-4. Return to StopScroll. The banner at the top of the main screen must read **Service actif**.
+## Good to know
 
-The app requests no other permission: no Usage Access, no `SYSTEM_ALERT_WINDOW`, no notifications,
-no exact alarms, no device administrator, no root. The time-up screen is started by the
-accessibility service, which Android allows without an overlay permission. Package visibility is scoped to launchable apps
-through a `<queries>` declaration rather than `QUERY_ALL_PACKAGES`.
+- StopScroll sends you to your home screen. It does not uninstall, force-stop or hide apps.
+- Changing the system clock changes when a pause ends.
+- Split-screen, picture-in-picture, work profiles and the web versions of apps are not covered.
+- There is no PIN on purpose. You stay in charge.
 
-## Configure a rule
+## Roadmap
 
-1. Tap **Ajouter une application** and pick an installed app (each app is listed with its icon) (Instagram is
-   `com.instagram.android`). StopScroll itself and your current launcher are excluded so
-   enforcement can never trap you in a HOME loop.
-2. Enter the allowed duration and the block duration, both in seconds. Both must be whole numbers
-   greater than zero. Values exceeding safe millisecond conversion or cooldown deadline bounds
-   are rejected; invalid input leaves the saved rule untouched.
-3. The switch on each card enables or disables the rule. Disabling clears that app's remaining
-   allowance and any running cooldown. A duration change applies to the next session and leaves a
-   running cooldown unchanged.
+- English interface.
+- Daily summary of time saved.
+- Schedules, such as no limit on weekends.
 
-Defaults for a newly added app are 5 minutes of use and 10 minutes of cooldown.
+## For developers
 
-## What happens at runtime
-
-- The service watches which ordinary app owns the foreground. It reads window and package events
-  only — never screen text, screenshots, credentials or browsing activity. Nothing is transmitted.
-- 30 seconds before the allowance runs out, a short non-touchable overlay appears above the target
-  app for 4 seconds. There is no sound or vibration. For an allowance of 30 seconds or less the
-  warning is shown immediately on opening instead. One warning per allowance cycle: it does not
-  reappear each time you reopen the app.
-- At the deadline the cooldown starts. If the target is still in the foreground, StopScroll covers it
-  with its own *Temps écoulé* screen showing the app icon, its name and the block duration. **OK**
-  or the back button goes to the launcher. If the screen cannot be started, the system HOME action
-  is used instead. If something else is in the foreground at that moment, the cooldown is still
-  committed and HOME is applied on the next confirmed entry into the target.
-- The time-up screen also offers **+30 s**. See *Extension rule* below.
-- During cooldown, opening the target sends you HOME again. Repeated attempts do not extend the
-  deadline. Once it expires, the next opening starts a full new allowance.
-- Each package has its own rule, allowance and cooldown; they never overwrite each other.
-
-### Extension rule (+30 s)
-
-- **+30 s** cancels the block that just started, grants 30 seconds of allowance and reopens the
-  app. In exchange, the block applied when those 30 seconds run out is twice the block that was
-  cancelled.
-- Each further **+30 s** doubles again: with a 10-minute block, the blocks become 20, 40, 80
-  minutes and so on. The doubled duration is capped at the largest duration accepted as input
-  for the current date, so a deadline never overflows.
-- The 30 seconds behave like any allowance: leaving the app pauses them, and no 30-second warning
-  is shown for them.
-- The doubled duration applies to one block only. Once a block runs to its end, the next cycle
-  uses the configured block duration again. Disabling or removing the rule also clears it.
-- The extension is offered only on the time-up screen shown at expiry. Reopening the app during a
-  block sends you HOME, without any extension. A block restored from a version without this
-  feature offers no extension.
-- The keyboard, the notification shade, permission dialogs and StopScroll's own overlay do not
-  create or end a session.
-
-## Persistence and recovery
-
-Rules, remaining allowance, warning state, cooldown and the current block duration (including a
-doubled one after **+30 s**) are stored with DataStore. While a session
-runs, the state is checkpointed every second.
-
-- A normal exit or service disconnect snapshots the exact remaining time.
-- An abrupt process loss can roll the remaining allowance back by at most 1 second.
-- Time during which the service was not running is never charged against your allowance, and the
-  allowance is never silently reset to its full configured value.
-- Allowance consumption uses monotonic time. Cooldown uses a stored wall-clock deadline so it keeps
-  running across a reboot.
-
-## Known limitations
-
-- HOME returns to the launcher. It does not force-stop the target app and it is not an OS-level
-  launch prohibition. You may briefly see the app before its foreground event is handled.
-- Because cooldown deadlines are wall-clock based, changing the system clock changes when a
-  cooldown ends.
-- No protection is claimed while the accessibility service is disabled or StopScroll is
-  force-stopped, and there is no PIN or anti-tamper mechanism. This is a voluntary self-control
-  tool, by design.
-- Resistance to repeated forced crashes is not claimed.
-- Supported usage mode is a single foreground app on one phone. Split-screen, picture-in-picture,
-  work profiles, cloned packages and browser versions of the target sites are outside the initial
-  guarantee.
-- Overlay support must be confirmed on the actual device; `TYPE_ACCESSIBILITY_OVERLAY` availability
-  depends on the OEM build.
-- OEM battery management may stop the service on some devices. StopScroll does not request a
-  battery exemption and does not silently change any system setting.
-
-## Device acceptance checklist
-
-This checklist has **not** been executed: no Android device was reachable from the build
-environment when the APK was produced, so no real-device success is claimed. Record the exact
-device model, Android version, API level and build number when you run it.
-
-Suggested rule for the run: Instagram, 45 seconds allowed, 60 seconds blocked.
-
-1. Install the APK, enable the accessibility service and confirm the banner reads *Service actif*.
-2. Open Instagram: a warning appears after 15 seconds (30 seconds remaining; target tolerance
-   2 seconds). Leave while it is visible: it must disappear over the launcher or another app.
-   Also try a 1-second allowance: no warning may remain over HOME after expiry.
-3. The *Temps écoulé* screen appears near 45 seconds, with Instagram's icon and a 1-minute block.
-   **OK** returns to the launcher.
-4. Reopening during the cooldown sends you HOME again, within about 1 second of the entry.
-5. Repeated attempts do not push the cooldown deadline further out.
-6. After 60 seconds a new opening is allowed with a full fresh allowance.
-7. Leave Instagram before expiry, including a direct switch into StopScroll settings through
-   recent apps; wait, reopen: the remaining time resumes where it stopped.
-8. Navigate between screens inside Instagram: the session is not reset.
-9. Open the notification shade and the keyboard: the session is not reset.
-10. Lock and unlock the screen: consumption is paused while locked.
-11. Have another app in the foreground when the allowance expires: that app is not ejected, and
-    HOME applies on the next entry into Instagram.
-12. Configure two selected apps: their allowances and cooldowns stay independent.
-13. Disable a rule: its allowance and cooldown are cleared and it is no longer enforced.
-14. Remove Instagram from the list, or test on a device without Instagram: nothing breaks.
-15. Force-stop StopScroll or toggle the accessibility service off and on: rules, remaining
-    allowance and cooldown are restored. If Instagram is already open when the service connects,
-    enforce its restored allowance or cooldown without waiting for another window event.
-16. Reboot the phone: the cooldown is still running and the remaining allowance is intact.
-17. At expiry, tap **+30 s**: Instagram reopens with 30 seconds and no warning. At the next expiry
-    the screen announces a 2-minute block; tap **+30 s** again and the next one is 4 minutes. Let a
-    block run out: the following cycle is back to 45 seconds and a 1-minute block.
-18. The rule list and the app picker show each app's icon next to its name.
-
-## Project layout
-
-| Path | Contents |
-| --- | --- |
-| `app/src/main/java/com/stopscroll/app/engine/` | Pure Kotlin session and cooldown state machine, with an injected clock |
-| `app/src/main/java/com/stopscroll/app/service/` | AccessibilityService adapter, warning overlay, Android clock |
-| `app/src/main/java/com/stopscroll/app/data/` | DataStore persistence for rules and runtime state |
-| `app/src/main/java/com/stopscroll/app/ui/` | Compose screens (rules, time-up), view model, app picker and icons, service status |
-| `app/src/test/java/` | Fake-clock engine tests |
-
-## Workflow
-
-Product and delivery documentation lives in [`logics/`](logics/). Use `logics-manager status` to
-inspect the next workflow action. Confirmed product decisions are recorded in
-[`logics/scaffold/android-mvp-decisions.md`](logics/scaffold/android-mvp-decisions.md).
+Build, tests, architecture, runtime rules and the device checklist live in
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
