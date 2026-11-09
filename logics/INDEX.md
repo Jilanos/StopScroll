@@ -19,7 +19,8 @@ _None_
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
 | [req_000_stopscroll_android_mvp_for_per_opening_app_limits](request/req_000_stopscroll_android_mvp_for_per_opening_app_limits.md) | StopScroll Android MVP for per-opening app limits | Ready |  |  | request/req_000_stopscroll_android_mvp_for_per_opening_app_limits.md |
-| [req_001_review_findings_android_mvp_runtime_and_rule_persistence](request/req_001_review_findings_android_mvp_runtime_and_rule_persistence.md) | Review findings: Android MVP runtime and rule persistence | Draft |  |  | request/req_001_review_findings_android_mvp_runtime_and_rule_persistence.md |
+| [req_001_review_findings_android_mvp_runtime_and_rule_persistence](request/req_001_review_findings_android_mvp_runtime_and_rule_persistence.md) | Review findings: Android MVP runtime and rule persistence | Ready |  |  | request/req_001_review_findings_android_mvp_runtime_and_rule_persistence.md |
+| [req_002_time_up_screen_extension_and_app_icons](request/req_002_time_up_screen_extension_and_app_icons.md) | Time-up screen with +30 s extension and app icons | Ready |  |  | request/req_002_time_up_screen_extension_and_app_icons.md |
 
 ## Backlog
 
@@ -29,12 +30,16 @@ _None_
 | [item_002_implement_deterministic_session_and_cooldown_engine](backlog/item_002_implement_deterministic_session_and_cooldown_engine.md) | Implement deterministic session and cooldown engine | In progress |  | 85% | backlog/item_002_implement_deterministic_session_and_cooldown_engine.md |
 | [item_003_connect_accessibility_detection_warning_and_home_enforcement](backlog/item_003_connect_accessibility_detection_warning_and_home_enforcement.md) | Connect accessibility detection warning and HOME enforcement | In progress |  | 85% | backlog/item_003_connect_accessibility_detection_warning_and_home_enforcement.md |
 | [item_004_validate_apk_and_document_installation_and_permissions](backlog/item_004_validate_apk_and_document_installation_and_permissions.md) | Validate APK and document installation and permissions | In progress |  | 85% | backlog/item_004_validate_apk_and_document_installation_and_permissions.md |
+| [item_005_review_findings_android_mvp_runtime_and_rule_persistence](backlog/item_005_review_findings_android_mvp_runtime_and_rule_persistence.md) | Review findings: Android MVP runtime and rule persistence | In progress |  | 85% | backlog/item_005_review_findings_android_mvp_runtime_and_rule_persistence.md |
+| [item_006_time_up_screen_with_30_s_extension_and_app_icons](backlog/item_006_time_up_screen_with_30_s_extension_and_app_icons.md) | Time-up screen with +30 s extension and app icons | In progress |  | 90% | backlog/item_006_time_up_screen_with_30_s_extension_and_app_icons.md |
 
 ## Tasks
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
 | [task_001_deliver_stopscroll_android_mvp_apk](tasks/task_001_deliver_stopscroll_android_mvp_apk.md) | Deliver StopScroll Android MVP APK | In progress | paul.mondou@circle-mobility.com | 85% | tasks/task_001_deliver_stopscroll_android_mvp_apk.md |
+| [task_002_review_findings_android_mvp_runtime_and_rule_persistence](tasks/task_002_review_findings_android_mvp_runtime_and_rule_persistence.md) | Review findings: Android MVP runtime and rule persistence | In progress | paul.mondou@live.fr | 85% | tasks/task_002_review_findings_android_mvp_runtime_and_rule_persistence.md |
+| [task_003_time_up_screen_with_30_s_extension_and_app_icons](tasks/task_003_time_up_screen_with_30_s_extension_and_app_icons.md) | Time-up screen with +30 s extension and app icons | In progress |  | 90% | tasks/task_003_time_up_screen_with_30_s_extension_and_app_icons.md |
 
 ## Runbooks
 

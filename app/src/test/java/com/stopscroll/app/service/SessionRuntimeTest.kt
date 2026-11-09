@@ -105,4 +105,27 @@ class SessionRuntimeTest {
         runtime.cycle { engine.onTick() }
         assertEquals(50_000L, engine.stateOf(target)?.remainingUsageMillis)
     }
+
+    @Test
+    fun `a granted extension is persisted and relaunches the target`() = runTest {
+        runtime.initialize({ StoredSnapshot(listOf(rule), emptyMap()) }, { target })
+        clock.advance(60_000L)
+        runtime.cycle { engine.onTick() }
+        assertEquals(EngineEffect.GoHome(target, HomeReason.ALLOWANCE_EXPIRED), effects.last())
+        runtime.cycle { engine.onForeground(ordinaryForegroundPackage(ownPackage)) }
+
+        runtime.cycle { engine.grantExtension(target) }
+
+        assertEquals(EngineEffect.LaunchApp(target), effects.last())
+        assertEquals(PackageRuntimeState(30_000L, warned = true, cooldownMillis = 120_000L), writes.last()[target])
+
+        val restarted = SessionEngine(clock)
+        val writesAfter = mutableListOf<Map<String, PackageRuntimeState>>()
+        SessionRuntime(restarted, { writesAfter += it }, {}).initialize(
+            { StoredSnapshot(listOf(rule), writes.last()) },
+            { target },
+        )
+        assertEquals(30_000L, restarted.stateOf(target)?.remainingUsageMillis)
+        assertEquals(120_000L, restarted.stateOf(target)?.cooldownMillis)
+    }
 }

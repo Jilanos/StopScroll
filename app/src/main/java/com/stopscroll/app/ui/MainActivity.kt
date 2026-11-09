@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -32,6 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,6 +46,8 @@ import com.stopscroll.app.R
 import com.stopscroll.app.data.StopScrollStore
 import com.stopscroll.app.engine.AppRule
 import com.stopscroll.app.engine.durationMillis
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -154,6 +158,8 @@ private fun RuleCard(rule: AppRule, onToggle: (Boolean) -> Unit, onEdit: () -> U
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                AppIcon(rule.packageName)
+                Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(rule.label, style = MaterialTheme.typography.titleMedium)
                     Text(rule.packageName, style = MaterialTheme.typography.bodySmall)
@@ -173,7 +179,9 @@ private fun RuleCard(rule: AppRule, onToggle: (Boolean) -> Unit, onEdit: () -> U
 @Composable
 private fun AppPickerDialog(onDismiss: () -> Unit, onPick: (InstalledApp) -> Unit) {
     val context = LocalContext.current
-    val apps = remember { loadLaunchableApps(context) }
+    val apps by produceState(emptyList<InstalledApp>()) {
+        value = withContext(Dispatchers.IO) { loadLaunchableApps(context) }
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {},
@@ -183,6 +191,8 @@ private fun AppPickerDialog(onDismiss: () -> Unit, onPick: (InstalledApp) -> Uni
             LazyColumn {
                 items(apps, key = { it.packageName }) { app ->
                     TextButton(onClick = { onPick(app) }, modifier = Modifier.fillMaxWidth()) {
+                        AppIcon(app.packageName, size = 32.dp)
+                        Spacer(Modifier.width(12.dp))
                         Text(app.label, modifier = Modifier.weight(1f))
                     }
                 }
@@ -240,11 +250,6 @@ private fun DurationDialog(rule: AppRule, onDismiss: () -> Unit, onConfirm: (App
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
-}
-
-private fun formatDuration(millis: Long): String {
-    val totalSeconds = millis / 1000
-    return "%d min %02d s".format(totalSeconds / 60, totalSeconds % 60)
 }
 
 private const val DEFAULT_USAGE_MILLIS = 5 * 60 * 1000L

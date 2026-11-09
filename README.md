@@ -48,7 +48,7 @@ The APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
 `testDebugUnitTest` runs the session engine and runtime coordinator tests against a fake clock:
 pause and resume (including the StopScroll activity), startup readiness and foreground reconciliation,
 warning ownership and cleanup, duration bounds, expiry, cooldown re-entry and expiry, restart and
-reboot recovery, rule edits and package independence. A JVM DataStore test exercises overlapping
+reboot recovery, rule edits, package independence, and the +30 s extension with its doubled block. A JVM DataStore test exercises overlapping
 rule transactions against a temporary preferences file. `lintDebug` runs with `warningsAsErrors`.
 
 ## Install
@@ -75,12 +75,13 @@ StopScroll enforces nothing until you enable it yourself; it cannot grant itself
 4. Return to StopScroll. The banner at the top of the main screen must read **Service actif**.
 
 The app requests no other permission: no Usage Access, no `SYSTEM_ALERT_WINDOW`, no notifications,
-no exact alarms, no device administrator, no root. Package visibility is scoped to launchable apps
+no exact alarms, no device administrator, no root. The time-up screen is started by the
+accessibility service, which Android allows without an overlay permission. Package visibility is scoped to launchable apps
 through a `<queries>` declaration rather than `QUERY_ALL_PACKAGES`.
 
 ## Configure a rule
 
-1. Tap **Ajouter une application** and pick an installed app (Instagram is
+1. Tap **Ajouter une application** and pick an installed app (each app is listed with its icon) (Instagram is
    `com.instagram.android`). StopScroll itself and your current launcher are excluded so
    enforcement can never trap you in a HOME loop.
 2. Enter the allowed duration and the block duration, both in seconds. Both must be whole numbers
@@ -100,18 +101,38 @@ Defaults for a newly added app are 5 minutes of use and 10 minutes of cooldown.
   app for 4 seconds. There is no sound or vibration. For an allowance of 30 seconds or less the
   warning is shown immediately on opening instead. One warning per allowance cycle: it does not
   reappear each time you reopen the app.
-- At the deadline the cooldown starts and StopScroll invokes the system HOME action if the target
-  is still in the foreground. If something else is in the foreground at that moment, the cooldown
-  is still committed and HOME is applied on the next confirmed entry into the target.
+- At the deadline the cooldown starts. If the target is still in the foreground, StopScroll covers it
+  with its own *Temps écoulé* screen showing the app icon, its name and the block duration. **OK**
+  or the back button goes to the launcher. If the screen cannot be started, the system HOME action
+  is used instead. If something else is in the foreground at that moment, the cooldown is still
+  committed and HOME is applied on the next confirmed entry into the target.
+- The time-up screen also offers **+30 s**. See *Extension rule* below.
 - During cooldown, opening the target sends you HOME again. Repeated attempts do not extend the
   deadline. Once it expires, the next opening starts a full new allowance.
 - Each package has its own rule, allowance and cooldown; they never overwrite each other.
+
+### Extension rule (+30 s)
+
+- **+30 s** cancels the block that just started, grants 30 seconds of allowance and reopens the
+  app. In exchange, the block applied when those 30 seconds run out is twice the block that was
+  cancelled.
+- Each further **+30 s** doubles again: with a 10-minute block, the blocks become 20, 40, 80
+  minutes and so on. The doubled duration is capped at the largest duration accepted as input
+  for the current date, so a deadline never overflows.
+- The 30 seconds behave like any allowance: leaving the app pauses them, and no 30-second warning
+  is shown for them.
+- The doubled duration applies to one block only. Once a block runs to its end, the next cycle
+  uses the configured block duration again. Disabling or removing the rule also clears it.
+- The extension is offered only on the time-up screen shown at expiry. Reopening the app during a
+  block sends you HOME, without any extension. A block restored from a version without this
+  feature offers no extension.
 - The keyboard, the notification shade, permission dialogs and StopScroll's own overlay do not
   create or end a session.
 
 ## Persistence and recovery
 
-Rules, remaining allowance, warning state and cooldown are stored with DataStore. While a session
+Rules, remaining allowance, warning state, cooldown and the current block duration (including a
+doubled one after **+30 s**) are stored with DataStore. While a session
 runs, the state is checkpointed every second.
 
 - A normal exit or service disconnect snapshots the exact remaining time.
@@ -151,7 +172,8 @@ Suggested rule for the run: Instagram, 45 seconds allowed, 60 seconds blocked.
 2. Open Instagram: a warning appears after 15 seconds (30 seconds remaining; target tolerance
    2 seconds). Leave while it is visible: it must disappear over the launcher or another app.
    Also try a 1-second allowance: no warning may remain over HOME after expiry.
-3. HOME is invoked near 45 seconds.
+3. The *Temps écoulé* screen appears near 45 seconds, with Instagram's icon and a 1-minute block.
+   **OK** returns to the launcher.
 4. Reopening during the cooldown sends you HOME again, within about 1 second of the entry.
 5. Repeated attempts do not push the cooldown deadline further out.
 6. After 60 seconds a new opening is allowed with a full fresh allowance.
@@ -169,6 +191,10 @@ Suggested rule for the run: Instagram, 45 seconds allowed, 60 seconds blocked.
     allowance and cooldown are restored. If Instagram is already open when the service connects,
     enforce its restored allowance or cooldown without waiting for another window event.
 16. Reboot the phone: the cooldown is still running and the remaining allowance is intact.
+17. At expiry, tap **+30 s**: Instagram reopens with 30 seconds and no warning. At the next expiry
+    the screen announces a 2-minute block; tap **+30 s** again and the next one is 4 minutes. Let a
+    block run out: the following cycle is back to 45 seconds and a 1-minute block.
+18. The rule list and the app picker show each app's icon next to its name.
 
 ## Project layout
 
@@ -177,7 +203,7 @@ Suggested rule for the run: Instagram, 45 seconds allowed, 60 seconds blocked.
 | `app/src/main/java/com/stopscroll/app/engine/` | Pure Kotlin session and cooldown state machine, with an injected clock |
 | `app/src/main/java/com/stopscroll/app/service/` | AccessibilityService adapter, warning overlay, Android clock |
 | `app/src/main/java/com/stopscroll/app/data/` | DataStore persistence for rules and runtime state |
-| `app/src/main/java/com/stopscroll/app/ui/` | Compose screen, view model, app picker, service status |
+| `app/src/main/java/com/stopscroll/app/ui/` | Compose screens (rules, time-up), view model, app picker and icons, service status |
 | `app/src/test/java/` | Fake-clock engine tests |
 
 ## Workflow

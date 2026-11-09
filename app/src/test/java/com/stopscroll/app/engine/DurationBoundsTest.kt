@@ -42,4 +42,32 @@ class DurationBoundsTest {
         assertEquals(Long.MAX_VALUE, cooldownDeadline(Long.MAX_VALUE - 999L, 1_000L))
         assertEquals(61_000L, cooldownDeadline(1_000L, 60_000L))
     }
+
+    @Test
+    fun `doubling is capped by the input bound for the current wall clock`() {
+        val now = 1_700_000_000_000L
+        assertEquals(120_000L, doubledDurationMillis(60_000L, now))
+        assertEquals(maxDurationMillis(now), doubledDurationMillis(maxDurationMillis(now) / 2 + 1_000L, now))
+        assertEquals(maxDurationMillis(now), doubledDurationMillis(Long.MAX_VALUE, now))
+        assertEquals(0L, doubledDurationMillis(-5L, now))
+    }
+
+    @Test
+    fun `repeated extensions of a huge block never wrap the deadline`() {
+        val clock = FakeClock()
+        val target = "com.example.target"
+        val huge = maxDurationMillis(clock.wallTime())
+        val engine = SessionEngine(clock).apply { setRules(listOf(AppRule(target, "Target", 1_000L, huge))) }
+        engine.onForeground(target)
+        clock.advance(1_000L)
+        engine.onTick()
+        repeat(3) {
+            engine.grantExtension(target)
+            engine.onForeground(target)
+            clock.advance(SessionEngine.EXTENSION_MILLIS)
+            engine.onTick()
+            val deadline = engine.stateOf(target)?.cooldownEndsAtWallMillis
+            assertTrue(deadline != null && deadline > clock.wallTime())
+        }
+    }
 }

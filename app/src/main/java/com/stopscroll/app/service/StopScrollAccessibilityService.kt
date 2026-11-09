@@ -12,7 +12,9 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import com.stopscroll.app.data.StopScrollStore
 import com.stopscroll.app.engine.EngineEffect
+import com.stopscroll.app.engine.HomeReason
 import com.stopscroll.app.engine.SessionEngine
+import com.stopscroll.app.ui.TimeUpActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
@@ -59,6 +61,11 @@ class StopScrollAccessibilityService : AccessibilityService() {
                     runtime.updateRules(rules, ::resolveForegroundPackage)
                 }
             }
+            launch {
+                ExtensionRequests.requests.collect { packageName ->
+                    runtime.cycle { engine.grantExtension(packageName) }
+                }
+            }
             while (isActive) {
                 delay(TICK_MILLIS)
                 runtime.cycle { engine.onTick() }
@@ -89,7 +96,35 @@ class StopScrollAccessibilityService : AccessibilityService() {
 
     private fun applyEffects(effects: List<EngineEffect>) {
         warnings.update(resolveForegroundPackage(), engine::canShowWarning, effects)
-        effects.filterIsInstance<EngineEffect.GoHome>().forEach { goHome(it.packageName) }
+        effects.forEach { effect ->
+            when (effect) {
+                is EngineEffect.GoHome -> when (effect.reason) {
+                    HomeReason.ALLOWANCE_EXPIRED -> showTimeUp(effect.packageName)
+                    HomeReason.COOLDOWN_REENTRY -> goHome(effect.packageName)
+                }
+                is EngineEffect.LaunchApp -> launchApp(effect.packageName)
+                is EngineEffect.ShowWarning -> Unit
+            }
+        }
+    }
+
+    /** Covers the expired target with the time-up screen; falls back to HOME if it cannot start. */
+    private fun showTimeUp(packageName: String) {
+        if (resolveForegroundPackage() != packageName) return
+        val blockMillis = engine.stateOf(packageName)?.cooldownMillis
+        val intent = TimeUpActivity.intent(this, packageName, blockMillis, engine.extensionOffer(packageName))
+        runCatching { startActivity(intent) }
+            .onFailure {
+                Log.w(TAG, "Time-up screen refused for $packageName", it)
+                goHome(packageName)
+            }
+    }
+
+    private fun launchApp(packageName: String) {
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+            ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ?: return
+        runCatching { startActivity(intent) }
+            .onFailure { Log.w(TAG, "Relaunch refused for $packageName", it) }
     }
 
     /** Ownership is re-checked here so an unrelated foreground app is never ejected. */

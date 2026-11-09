@@ -86,10 +86,42 @@ class SessionEngine(private val clock: Clock) {
             remainingUsageMillis = remaining,
             warned = alreadyWarned || warnNow,
             cooldownEndsAtWallMillis = null,
+            cooldownMillis = state.cooldownMillis,
         )
         runningPackage = packageName
         runningSinceElapsed = clock.elapsedRealtime()
         if (warnNow) effects += EngineEffect.ShowWarning(packageName, remaining)
+        return effects
+    }
+
+    /**
+     * Doubled block duration the user would accept in exchange for an extension, or null when
+     * no extension can be granted (no cooldown running for this package, or a legacy state).
+     */
+    fun extensionOffer(packageName: String): Long? {
+        expireCooldowns()
+        if (rules[packageName]?.enabled != true) return null
+        val state = states[packageName] ?: return null
+        if (state.cooldownEndsAtWallMillis == null) return null
+        val blockMillis = state.cooldownMillis ?: return null
+        return doubledDurationMillis(blockMillis, clock.wallTime())
+    }
+
+    /**
+     * Cancels the running cooldown, grants [EXTENSION_MILLIS] of allowance and doubles the block
+     * duration that the next expiry applies. Each grant doubles again, capped by
+     * [maxDurationMillis]. The doubled duration is reset once a block runs to its end.
+     */
+    fun grantExtension(packageName: String): List<EngineEffect> {
+        val effects = advance().toMutableList()
+        val doubled = extensionOffer(packageName) ?: return effects
+        states[packageName] = PackageRuntimeState(
+            remainingUsageMillis = EXTENSION_MILLIS,
+            warned = true,
+            cooldownEndsAtWallMillis = null,
+            cooldownMillis = doubled,
+        )
+        effects += EngineEffect.LaunchApp(packageName)
         return effects
     }
 
@@ -109,10 +141,12 @@ class SessionEngine(private val clock: Clock) {
         runningSinceElapsed = now
 
         if (remaining <= 0L) {
+            val blockMillis = state.cooldownMillis ?: rule.cooldownMillis
             states[packageName] = PackageRuntimeState(
                 remainingUsageMillis = null,
                 warned = false,
-                cooldownEndsAtWallMillis = cooldownDeadline(clock.wallTime(), rule.cooldownMillis),
+                cooldownEndsAtWallMillis = cooldownDeadline(clock.wallTime(), blockMillis),
+                cooldownMillis = blockMillis,
             )
             runningPackage = null
             return if (foregroundPackage == packageName) {
@@ -132,12 +166,13 @@ class SessionEngine(private val clock: Clock) {
         for ((packageName, state) in states.entries.toList()) {
             val end = state.cooldownEndsAtWallMillis ?: continue
             if (now >= end) {
-                states[packageName] = state.copy(cooldownEndsAtWallMillis = null)
+                states[packageName] = state.copy(cooldownEndsAtWallMillis = null, cooldownMillis = null)
             }
         }
     }
 
     companion object {
         const val WARNING_LEAD_MILLIS = 30_000L
+        const val EXTENSION_MILLIS = 30_000L
     }
 }

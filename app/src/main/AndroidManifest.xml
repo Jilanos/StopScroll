@@ -31,6 +31,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.TimeUpActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity="" />
+
         <service
             android:name=".service.StopScrollAccessibilityService"
             android:exported="false"
