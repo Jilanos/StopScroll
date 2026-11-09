@@ -18,6 +18,12 @@ follows without you noticing. StopScroll keeps the good part. You choose how lon
 app lasts. When it is over, StopScroll closes the app and gives you a real pause before the next
 one.
 
+<p align="center">
+  <img src="docs/screenshots/rules.png" width="200" alt="Rule list with Instagram, Reddit, Threads, X and YouTube">
+  <img src="docs/screenshots/picker.png" width="200" alt="App picker with suggestions">
+  <img src="docs/screenshots/editor.png" width="200" alt="Rule editor with preset durations">
+  <img src="docs/screenshots/time-up.png" width="200" alt="Time-up screen with the +30 s option">
+</p>
 
 ## Why it helps
 
@@ -43,6 +49,13 @@ Limits you set for yourself work. StopScroll makes them effortless to keep.
    minute" is not.
 
 When the pause is over, a full new allowance starts.
+
+<p align="center">
+  <img src="docs/screenshots/warning.png" width="320" alt="The 30-second heads-up at the top of the screen">
+</p>
+<p align="center">
+  <img src="docs/screenshots/onboarding.png" width="200" alt="First launch explainer">
+</p>
 
 ## Features
 

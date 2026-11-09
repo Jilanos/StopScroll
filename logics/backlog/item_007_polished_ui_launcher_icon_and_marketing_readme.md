@@ -1,10 +1,10 @@
 ## item_007_polished_ui_launcher_icon_and_marketing_readme - Polished UI, launcher icon and marketing README
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 100%
 > Confidence: 90%
-> Progress: 85%
+> Progress: 100%
 > Complexity: Medium
 > Theme: UI and presentation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -72,6 +72,7 @@ Marketing README in English; build, tests and the device checklist move to docs/
 - Hybrid rationale: Derived from request `req_003_polished_ui_and_marketing_readme` and kept bounded to one coherent delivery slice.
 - Source file: `logics/request/req_003_polished_ui_and_marketing_readme.md`.
 - Generated locally by logics-manager.
+- Task `task_004_polished_ui_launcher_icon_and_marketing_readme` was finished via `logics-manager flow finish task` on 2026-11-09.
 
 # Executions
 | When | Runner | Run id | Title | State | PR | Notes |
