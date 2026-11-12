@@ -1,7 +1,7 @@
 ## req_004_pause_and_allowance_timers_with_daily_stats - Pause and allowance timers per app with daily stats screen
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 100%
 > Confidence: 90%
 > Complexity: Medium

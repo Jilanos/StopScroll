@@ -1,10 +1,10 @@
 ## task_005_pause_and_allowance_timers_per_app_with_daily_stats_screen - Pause and allowance timers per app with daily stats screen
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 90%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -21,7 +21,7 @@
 - [x] The backlog scope is implemented.
 - [x] Acceptance criteria are covered (JVM for AC1-AC5 and the AC6 status mapping; AC6 rendering remains a device check).
 - [x] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # Backlog
 - `item_008_pause_and_allowance_timers_per_app_with_daily_stats_screen`
@@ -45,6 +45,8 @@
 - 2026-11-12: `./gradlew test assembleDebug lintDebug` with Temurin 17.0.20.1+1: BUILD SUCCESSFUL. Lint (warningsAsErrors): no issues.
 - 73 JVM tests per variant (debug and release), 0 failures, 0 skipped (47 before this task; added PauseTimerTest 18, TimerStatusTest 7, StopScrollStoreTest 1; 6 existing tests that encoded the previous never-refilled allowance were adapted).
 - APK: app/build/outputs/apk/debug/app-debug.apk. No device was used.
+- Finish workflow executed on 2026-11-12.
+- Linked backlog/request close verification passed.
 
 # Report
 - Rule as implemented: leaving an app with part of the allowance used stores `pausedSinceWallMillis`; reopening clears it and resumes the remaining allowance; once `cooldownMillis ?: rule.cooldownMillis` has elapsed away from the app, the engine refills the allowance, re-arms the warning and clears a pending doubled block. The pause uses wall time like the block.
@@ -52,6 +54,9 @@
 - Migration: additive fields with defaults; a state without a pause start (saved while open, or by the previous version) starts its pause at restore. StopScrollStoreTest decodes a previous-version payload.
 - UI: `timerStatus` (engine package) maps a persisted state to READY, IN_USE, PAUSING, BLOCKED or DISABLED; `RuleTimers` renders today's usage and two Material 3 linear progress bars on each rule card, refreshed every second.
 - AC1-AC3: PauseTimerTest transitions 1-4. AC4: PauseTimerTest daily usage, SessionEngineTest disable. AC5: PauseTimerTest restore, StopScrollStoreTest. AC6: TimerStatusTest, device check pending. AC7: validation above, README and docs/DEVELOPMENT.md.
+- Finished on 2026-11-12.
+- Linked backlog item(s): `item_008_pause_and_allowance_timers_per_app_with_daily_stats_screen`
+- Related request(s): `req_004_pause_and_allowance_timers_with_daily_stats`
 
 # Links
 - Request: `req_004_pause_and_allowance_timers_with_daily_stats`

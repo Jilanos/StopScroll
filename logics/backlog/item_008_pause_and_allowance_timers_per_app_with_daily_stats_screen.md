@@ -1,10 +1,10 @@
 ## item_008_pause_and_allowance_timers_per_app_with_daily_stats_screen - Pause and allowance timers per app with daily stats screen
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 90%
+> Progress: 100%
 > Complexity: High
 > Theme: Operator workflow and runtime integration
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -75,6 +75,7 @@ On opening StopScroll, show for each blocked app today's usage and the current s
 - Hybrid rationale: Derived from request `req_004_pause_and_allowance_timers_with_daily_stats` and kept bounded to one coherent delivery slice.
 - Source file: `logics/request/req_004_pause_and_allowance_timers_with_daily_stats.md`.
 - Generated locally by logics-manager.
+- Task `task_005_pause_and_allowance_timers_per_app_with_daily_stats_screen` was finished via `logics-manager flow finish task` on 2026-11-12.
 
 # Executions
 | When | Runner | Run id | Title | State | PR | Notes |
