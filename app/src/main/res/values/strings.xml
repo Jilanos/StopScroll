@@ -9,7 +9,7 @@
     <string name="onboarding_body">Choisissez vos applications. StopScroll vous laisse profiter d\'un temps de détente, puis vous propose une vraie pause.</string>
     <string name="how_title">Comment ça marche</string>
     <string name="how_step1_title">Un temps de détente</string>
-    <string name="how_step1_body">Vous fixez une durée par application. Elle est conservée si vous quittez l\'app et y revenez.</string>
+    <string name="how_step1_body">Vous fixez une durée par application. Elle se met en attente quand vous quittez l\'app, et se recharge si vous restez loin le temps d\'une pause.</string>
     <string name="how_step2_title">Un rappel discret</string>
     <string name="how_step2_body">30 secondes avant la fin, un petit message s\'affiche. Pas de son, pas de vibration.</string>
     <string name="how_step3_title">Une pause, puis on recommence</string>
@@ -48,6 +48,17 @@
     <string name="rule_removed">%1$s retirée</string>
     <string name="undo">Annuler</string>
 
+    <!-- Timers on the rule list -->
+    <string name="timers_today">Aujourd\'hui : %1$s</string>
+    <string name="timer_allowance">Détente</string>
+    <string name="timer_pause">Pause</string>
+    <string name="allowance_left">%1$s sur %2$s</string>
+    <string name="allowance_spent">épuisée</string>
+    <string name="pause_left">encore %1$s sur %2$s</string>
+    <string name="pause_blocked">app bloquée, encore %1$s</string>
+    <string name="pause_stopped">arrêtée, app ouverte</string>
+    <string name="pause_none">pas de pause en cours (%1$s)</string>
+
     <!-- App picker -->
     <string name="pick_title">Choisir une application</string>
     <string name="search_apps">Rechercher</string>
@@ -61,7 +72,7 @@
     <string name="allowed_title">Temps de détente</string>
     <string name="allowed_hint">Durée d\'utilisation avant la pause. Elle se met en attente quand vous quittez l\'app.</string>
     <string name="block_title">Durée de la pause</string>
-    <string name="block_hint">Pendant la pause, ouvrir l\'app vous ramène à l\'écran d\'accueil.</string>
+    <string name="block_hint">Rester loin de l\'app aussi longtemps recharge le temps de détente. Pendant une pause imposée, ouvrir l\'app vous ramène à l\'écran d\'accueil.</string>
     <string name="seconds_field">En secondes</string>
     <string name="invalid_duration">Saisissez un nombre entier de secondes, supérieur à zéro.</string>
     <string name="save">Enregistrer</string>

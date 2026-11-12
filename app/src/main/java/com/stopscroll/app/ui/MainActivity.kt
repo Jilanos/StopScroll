@@ -57,6 +57,7 @@ private fun StopScrollApp(
     onOpenAccessibilitySettings: () -> Unit,
 ) {
     val rules by viewModel.rules.collectAsStateWithLifecycle()
+    val statuses by viewModel.statuses.collectAsStateWithLifecycle()
     val serviceEnabled = rememberAccessibilityServiceEnabled()
     var screen by remember {
         mutableStateOf(if (display.onboardingDone) Screen.Rules else Screen.Onboarding)
@@ -78,6 +79,7 @@ private fun StopScrollApp(
 
         Screen.Rules -> RulesScreen(
             rules = rules,
+            statuses = statuses,
             serviceEnabled = serviceEnabled,
             snackbar = snackbar,
             themeMode = display.rememberMode(),

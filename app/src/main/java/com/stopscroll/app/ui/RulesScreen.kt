@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.stopscroll.app.R
 import com.stopscroll.app.engine.AppRule
+import com.stopscroll.app.engine.TimerStatus
 import com.stopscroll.app.ui.theme.Spacing
 import com.stopscroll.app.ui.theme.ThemeMode
 
@@ -62,6 +63,7 @@ import com.stopscroll.app.ui.theme.ThemeMode
 @Composable
 internal fun RulesScreen(
     rules: List<AppRule>,
+    statuses: Map<String, TimerStatus>,
     serviceEnabled: Boolean,
     snackbar: SnackbarHostState,
     themeMode: ThemeMode,
@@ -128,7 +130,12 @@ internal fun RulesScreen(
                 item(key = "empty") { EmptyState(onAdd) }
             } else {
                 items(rules, key = { it.packageName }) { rule ->
-                    RuleCard(rule = rule, onClick = { onEdit(rule) }, onToggle = { onToggle(rule, it) })
+                    RuleCard(
+                        rule = rule,
+                        status = statuses[rule.packageName],
+                        onClick = { onEdit(rule) },
+                        onToggle = { onToggle(rule, it) },
+                    )
                 }
             }
         }
@@ -238,9 +245,8 @@ private fun SectionHeader(rules: List<AppRule>) {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun RuleCard(rule: AppRule, onClick: () -> Unit, onToggle: (Boolean) -> Unit) {
+private fun RuleCard(rule: AppRule, status: TimerStatus?, onClick: () -> Unit, onToggle: (Boolean) -> Unit) {
     val colors = MaterialTheme.colorScheme
     Card(
         onClick = onClick,
@@ -248,43 +254,59 @@ private fun RuleCard(rule: AppRule, onClick: () -> Unit, onToggle: (Boolean) -> 
         colors = CardDefaults.cardColors(containerColor = colors.surfaceContainerLowest),
         border = BorderStroke(1.dp, colors.outlineVariant.copy(alpha = 0.6f)),
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = Spacing.l, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val dim = if (rule.enabled) 1f else 0.45f
-            AppIcon(rule.packageName, size = 48.dp, modifier = Modifier.alpha(dim))
-            Spacer(Modifier.width(Spacing.l))
-            Column(Modifier.weight(1f).alpha(if (rule.enabled) 1f else 0.7f)) {
-                Text(rule.label, style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(6.dp))
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    if (rule.enabled) {
-                        Pill(
-                            text = stringResource(R.string.allowed_short, formatDuration(rule.usageMillis)),
-                            container = colors.secondaryContainer,
-                            content = colors.onSecondaryContainer,
-                        )
-                        Pill(
-                            text = stringResource(R.string.block_short, formatDuration(rule.cooldownMillis)),
-                            container = colors.tertiaryContainer,
-                            content = colors.onTertiaryContainer,
-                        )
-                    } else {
-                        Pill(
-                            text = stringResource(R.string.rule_paused),
-                            container = colors.surfaceContainerHighest,
-                            content = colors.onSurfaceVariant,
-                        )
-                    }
+        RuleSummary(rule, onToggle)
+        if (status != null) {
+            HorizontalDivider(color = colors.outlineVariant.copy(alpha = 0.6f))
+            RuleTimers(
+                status = status,
+                modifier = Modifier
+                    .padding(horizontal = Spacing.l, vertical = Spacing.m)
+                    .alpha(if (rule.enabled) 1f else 0.7f),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun RuleSummary(rule: AppRule, onToggle: (Boolean) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier.padding(horizontal = Spacing.l, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val dim = if (rule.enabled) 1f else 0.45f
+        AppIcon(rule.packageName, size = 48.dp, modifier = Modifier.alpha(dim))
+        Spacer(Modifier.width(Spacing.l))
+        Column(Modifier.weight(1f).alpha(if (rule.enabled) 1f else 0.7f)) {
+            Text(rule.label, style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(6.dp))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                if (rule.enabled) {
+                    Pill(
+                        text = stringResource(R.string.allowed_short, formatDuration(rule.usageMillis)),
+                        container = colors.secondaryContainer,
+                        content = colors.onSecondaryContainer,
+                    )
+                    Pill(
+                        text = stringResource(R.string.block_short, formatDuration(rule.cooldownMillis)),
+                        container = colors.tertiaryContainer,
+                        content = colors.onTertiaryContainer,
+                    )
+                } else {
+                    Pill(
+                        text = stringResource(R.string.rule_paused),
+                        container = colors.surfaceContainerHighest,
+                        content = colors.onSurfaceVariant,
+                    )
                 }
             }
-            Spacer(Modifier.width(Spacing.s))
-            Switch(checked = rule.enabled, onCheckedChange = onToggle)
         }
+        Spacer(Modifier.width(Spacing.s))
+        Switch(checked = rule.enabled, onCheckedChange = onToggle)
     }
 }
 
