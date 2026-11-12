@@ -15,8 +15,8 @@ No account, no internet access, no guilt.
 
 Scrolling is a real way to rest. The problem is never the first ten minutes. It is the hour that
 follows without you noticing. StopScroll keeps the good part. You choose how long a break in an
-app lasts. When it is over, StopScroll closes the app and gives you a real pause before the next
-one.
+app lasts and how long a pause away from it is. Take that pause and your time is back in full. Use
+it all in one go and StopScroll closes the app and makes you take the pause.
 
 <p align="center">
   <img src="docs/screenshots/rules.png" width="200" alt="Rule list with Instagram, Reddit, Threads, X and YouTube">
@@ -38,17 +38,23 @@ Limits you set for yourself work. StopScroll makes them effortless to keep.
 
 ## How it works
 
-1. **You set a time to unwind.** Pick an app and how long you want to enjoy it, for example
-   5 minutes. Leave the app and come back later: the remaining time waits for you.
-2. **A gentle heads-up.** 30 seconds before the end, a small message appears at the top of the
+1. **You set a time to unwind and a pause.** Pick an app, how long you want to enjoy it, for
+   example 5 minutes, and how long a pause lasts, for example 10 minutes. The time to unwind runs
+   only while the app is open.
+2. **Leaving starts the pause.** While the app is closed, the pause runs and the time to unwind
+   waits. Come back before the end of the pause and you continue where you stopped; the pause
+   starts again from zero next time you leave. Stay away for the whole pause and the time to
+   unwind is full again.
+3. **A gentle heads-up.** 30 seconds before the end, a small message appears at the top of the
    screen for 4 seconds. No sound, no vibration.
-3. **Time for a pause.** When the time is up, StopScroll shows a calm screen and the app takes a
-   break, for example 10 minutes. Opening it during the break sends you back to your home screen.
-4. **Need to finish something?** Tap **+30 s** to get 30 more seconds. The next pause is twice as
+4. **Time for a pause.** When the time is up, StopScroll shows a calm screen and the app takes its
+   pause. Opening it during the pause sends you back to your home screen.
+5. **Need to finish something?** Tap **+30 s** to get 30 more seconds. The next pause is twice as
    long. Each further +30 s doubles it again. Finishing a message is fine. Endless "one more
    minute" is not.
 
-When the pause is over, a full new allowance starts.
+When the pause is over, a full new allowance starts. Open StopScroll at any time to see, for each
+app, how long you used it today and where its time to unwind and its pause stand.
 
 <p align="center">
   <img src="docs/screenshots/warning.png" width="320" alt="The 30-second heads-up at the top of the screen">
@@ -60,7 +66,10 @@ When the pause is over, a full new allowance starts.
 ## Features
 
 - One rule per app, each with its own time to unwind, pause duration and on/off switch.
-- Your remaining time is kept across openings, restarts and reboots.
+- A pause taken away from the app refills its time to unwind; a short break does not.
+- Today's use of each app and live bars for its time to unwind and its pause, right on the main
+  screen.
+- Your remaining time and a running pause are kept across openings, restarts and reboots.
 - A calm time-up screen with the app icon, the pause length and the **+30 s** option.
 - App icons everywhere, suggestions for the usual feeds, and search in the app picker.
 - Quick presets (1, 5, 10, 15, 30 min of use; 5, 10, 20, 30 min or 1 h of pause) or any value in seconds.
