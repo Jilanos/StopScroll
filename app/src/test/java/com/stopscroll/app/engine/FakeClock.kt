@@ -9,6 +9,9 @@ class FakeClock(
 
     override fun wallTime(): Long = wall
 
+    /** UTC days, so tests do not depend on the machine's time zone. */
+    override fun localDay(wallMillis: Long): Long = Math.floorDiv(wallMillis, DAY_MILLIS)
+
     fun advance(millis: Long) {
         elapsed += millis
         wall += millis
@@ -18,5 +21,9 @@ class FakeClock(
     fun reboot(downtimeMillis: Long) {
         elapsed = 0L
         wall += downtimeMillis
+    }
+
+    companion object {
+        const val DAY_MILLIS = 86_400_000L
     }
 }

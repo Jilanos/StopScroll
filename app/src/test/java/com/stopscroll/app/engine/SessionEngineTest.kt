@@ -61,7 +61,7 @@ class SessionEngineTest {
         engine.run(2 * MINUTE)
 
         engine.onForeground(LAUNCHER)
-        engine.run(10 * MINUTE)
+        engine.run(9 * MINUTE)
         engine.onForeground(INSTAGRAM)
 
         assertEquals(3 * MINUTE, engine.stateOf(INSTAGRAM)?.remainingUsageMillis)
@@ -74,7 +74,7 @@ class SessionEngineTest {
         engine.run(MINUTE)
 
         engine.onScreenLocked()
-        engine.run(30 * MINUTE)
+        engine.run(9 * MINUTE)
 
         assertEquals(4 * MINUTE, engine.stateOf(INSTAGRAM)?.remainingUsageMillis)
     }
@@ -243,13 +243,17 @@ class SessionEngineTest {
     }
 
     @Test
-    fun `disabling a rule clears its allowance and cooldown`() {
+    fun `disabling a rule clears its allowance and cooldown but keeps today's usage`() {
         val engine = engine(rule(usageMillis = 45_000, cooldownMillis = 60_000))
         engine.onForeground(INSTAGRAM)
         engine.run(45_000)
 
         engine.setRules(listOf(rule(usageMillis = 45_000, cooldownMillis = 60_000, enabled = false)))
-        assertNull(engine.stateOf(INSTAGRAM))
+        val state = engine.stateOf(INSTAGRAM)
+        assertNull(state?.remainingUsageMillis)
+        assertNull(state?.cooldownEndsAtWallMillis)
+        assertNull(state?.pausedSinceWallMillis)
+        assertEquals(45_000L, state?.usedTodayMillis)
 
         assertTrue(engine.onForeground(INSTAGRAM).isEmpty())
     }

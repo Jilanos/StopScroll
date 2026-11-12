@@ -1,6 +1,8 @@
 package com.stopscroll.app.data
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.stopscroll.app.engine.AppRule
 import com.stopscroll.app.engine.PackageRuntimeState
 import kotlinx.coroutines.CoroutineScope
@@ -49,6 +51,31 @@ class StopScrollStoreTest {
                 },
             ).awaitAll()
             assertEquals(setOf("app.2", "app.3"), store.readRules().map { it.packageName }.toSet())
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun `runtime saved by the previous version still decodes with the new fields defaulted`() = runBlocking {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        try {
+            val dataStore = PreferenceDataStoreFactory.create(scope = scope) {
+                folder.root.resolve("legacy.preferences_pb")
+            }
+            val legacy = """{"app.1":{"remainingUsageMillis":42000,"warned":true},""" +
+                """"app.2":{"cooldownEndsAtWallMillis":1700000060000,"cooldownMillis":120000}}"""
+            dataStore.edit { it[stringPreferencesKey("runtime")] = legacy }
+
+            val runtime = StopScrollStore(dataStore).readRuntime()
+
+            assertEquals(PackageRuntimeState(remainingUsageMillis = 42_000L, warned = true), runtime["app.1"])
+            assertNull(runtime["app.1"]?.pausedSinceWallMillis)
+            assertEquals(0L, runtime["app.1"]?.usedTodayMillis)
+            assertEquals(
+                PackageRuntimeState(cooldownEndsAtWallMillis = 1_700_000_060_000L, cooldownMillis = 120_000L),
+                runtime["app.2"],
+            )
         } finally {
             scope.cancel()
         }

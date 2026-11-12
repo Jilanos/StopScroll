@@ -31,7 +31,7 @@ class SessionRuntimeTest {
         runtime.initialize({ StoredSnapshot(listOf(rule), emptyMap()) }, { target })
         clock.advance(10_000L)
         runtime.cycle { engine.onForeground(ordinaryForegroundPackage(ownPackage)) }
-        clock.advance(120_000L)
+        clock.advance(30_000L)
         runtime.cycle { engine.onTick() }
         assertEquals(50_000L, engine.stateOf(target)?.remainingUsageMillis)
         runtime.cycle { engine.onForeground(target) }
@@ -91,7 +91,7 @@ class SessionRuntimeTest {
         foreground = ownPackage
         loaded.complete(StoredSnapshot(listOf(rule), mapOf(target to PackageRuntimeState(42_000L))))
         runCurrent()
-        clock.advance(120_000L)
+        clock.advance(30_000L)
         runtime.cycle { engine.onTick() }
         assertEquals(42_000L, engine.stateOf(target)?.remainingUsageMillis)
         assertTrue(effects.isEmpty())
@@ -117,7 +117,17 @@ class SessionRuntimeTest {
         runtime.cycle { engine.grantExtension(target) }
 
         assertEquals(EngineEffect.LaunchApp(target), effects.last())
-        assertEquals(PackageRuntimeState(30_000L, warned = true, cooldownMillis = 120_000L), writes.last()[target])
+        assertEquals(
+            PackageRuntimeState(
+                remainingUsageMillis = 30_000L,
+                warned = true,
+                cooldownMillis = 120_000L,
+                pausedSinceWallMillis = clock.wallTime(),
+                usageDay = clock.localDay(clock.wallTime()),
+                usedTodayMillis = 60_000L,
+            ),
+            writes.last()[target],
+        )
 
         val restarted = SessionEngine(clock)
         val writesAfter = mutableListOf<Map<String, PackageRuntimeState>>()
